@@ -1,7 +1,5 @@
 package commands;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -9,11 +7,6 @@ import java.net.ConnectException;
 import java.net.NoRouteToHostException;
 import java.net.Socket;
 import java.net.UnknownHostException;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import java.util.List;
-
-import commands.CommandAU;
 
 public class CommandUP {
 	
@@ -21,8 +14,7 @@ public class CommandUP {
 	private int port;
 	private String username;
 	private String password;
-	private String salt;
-	
+
 	public CommandUP(String ip, int port, String username, String password) {
 		this.ip = ip;
 		this.port = port;
@@ -30,7 +22,7 @@ public class CommandUP {
 		this.password = password;
 	}
 	
-	public boolean verifyLogin() throws IOException, ClassNotFoundException {
+	public Boolean verifyLogin() throws IOException, ClassNotFoundException {
 		Socket socket = null;
 		try {
 			 socket = new Socket(this.ip, this.port);

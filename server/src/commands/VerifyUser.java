@@ -3,14 +3,10 @@ package commands;
 import java.io.*;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.security.SecureRandom;
-import java.util.Base64;
 
 public class VerifyUser {
 	
-	public VerifyUser() {
-		
-	}
+	public VerifyUser() {}
 
 	public Boolean searchUser(String username, String password) throws IOException, NoSuchAlgorithmException {
 		//primeiro procurar o username e obter a linha em que está
@@ -25,11 +21,9 @@ public class VerifyUser {
 		br.close();
 		return false;	
 	}
-
-	private static final String ALGORITHM = "SHA-256";
 	
 	private static String hash(String input) throws NoSuchAlgorithmException {
-		MessageDigest md = MessageDigest.getInstance(ALGORITHM);
+		MessageDigest md = MessageDigest.getInstance("SHA-256");
 		md.update(input.getBytes());
 		byte[] digest = md.digest();
 		StringBuilder sb = new StringBuilder();
@@ -41,17 +35,11 @@ public class VerifyUser {
 	 
 	public Boolean comparePassword(String password, String salt) throws NoSuchAlgorithmException{ //IR BUSCAR O SALT AO FICHEIRO PASSWORDS
 		String hashedPassword = hash(password + salt);
-		System.out.println("saltpass");
-		System.out.println(hashedPassword);
-		if (hashedPassword.equals(password)) {
-			System.out.println("Authorized");
+		if (hashedPassword.equals(password)){
 			return true;
 		}
 		else {
-			System.err.println("Not authorized");
 			return false;
 		}	
 	}
-	
-	
 }

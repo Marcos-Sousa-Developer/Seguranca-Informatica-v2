@@ -32,43 +32,46 @@ public class ServerThread extends Thread {
 			ObjectInputStream inStream = new ObjectInputStream(this.socket.getInputStream());
 			ObjectOutputStream outStream = new ObjectOutputStream(this.socket.getOutputStream());
 			
-			String option = (String) inStream.readObject();
+			String option1 = (String) inStream.readObject();
 			
-			if (option.equals("-u")) {
+			if (option1.equals("-u")){
 				String username = (String) inStream.readObject();
 				String password = (String) inStream.readObject();
 
 				Boolean login = new VerifyUser().searchUser(username, password);
+				
+				outStream.writeObject(login);
+				
 				if(login) {
+					
+					String option2 = (String) inStream.readObject();
+					
 					//true (vai buscar os outros comandos)
-					if (option.equals("-c")) {
+					if (option2.equals("-c")) {
 						
 						new VerifyCommandC().verify(inStream, outStream);
 						
-					} else if (option.equals("-s")) {
+					} else if (option2.equals("-s")) {
 						
 						new VerifyCommandS().verify(inStream, outStream);
 						
-					} else if (option.equals("-e")) {
+					} else if (option2.equals("-e")) {
 						
 						new VerifyCommandE().verify(inStream, outStream);
 						
-					} else if (option.equals("-g")) {
+					} else if (option2.equals("-g")) {
 						
 						new VerifyCommandG().verify(inStream, outStream);			
 					}
 				} else {
 					//false
 				}
-			} else if (option.equals("-au")) {
+			} else if (option1.equals("-au")) {
 				String username = (String) inStream.readObject();
 				String password = (String) inStream.readObject();
 				String cert = (String) inStream.readObject();
 				
 				Boolean login = new NewUser().searchUsername(username, password);
-				
-				System.out.println("novo user");
-				System.out.println(login);
 				
 				outStream.writeObject(login);
 			}

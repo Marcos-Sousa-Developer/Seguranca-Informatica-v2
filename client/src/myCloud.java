@@ -102,31 +102,48 @@ public class myCloud {
 		
 		switch (args[2]) {
 			case "-au":
-				System.out.println("teste");
 				new CommandAU(address[0], Integer.parseInt(address[1]), args[3], args[4], args[5]).createUser();
 				break;
 			case "-u":
-				new CommandUP(address[0], Integer.parseInt(address[1]), args[3], args[5]).verifyLogin();
+				Boolean login = new CommandUP(address[0], Integer.parseInt(address[1]), args[3], args[5]).verifyLogin();
+				
+				if(login) {
+					System.out.println("Authorized");
+					
+					int optionIndex = 6;
+					
+					if(args[6].equals("-d")) {
+						optionIndex = 8;
+						//enviar ficheiros para o servidor para outros utilizadores
+						//se não tiver previamente o certificado do destinatário, pede ao servidor
+						//Se a maria enviar ficheiros para alice, os ficheiros devem de ficar com o nome "aa.pdf.assinado.maria"
+						//new CommandD(address[0], Integer.parseInt(address[1]), files).sendToServer();
+					}
+					
+					switch (args[optionIndex]) {
+					case "-c":
+						new CommandC(address[0], Integer.parseInt(address[1]), files).sendToServer();
+
+						break;
+					case "-s":
+						new CommandS(address[0], Integer.parseInt(address[1]), files).sendToServer();
+
+						break;
+					case "-e":
+						new CommandE(address[0], Integer.parseInt(address[1]), files).sendToServer();
+
+						break;
+					case "-g":
+						new CommandG(address[0], Integer.parseInt(address[1]), files).sendToServer();
+
+						break;
+				}
+				} else {
+					System.err.println("Not authorized");
+					System.err.println("Username or password invalid");
+					System.exit(-1);
+				}
 				break;
 		}
-
-		/*switch (args[2]) {
-			case "-c":
-				new CommandC(address[0], Integer.parseInt(address[1]), files).sendToServer();
-
-				break;
-			case "-s":
-				new CommandS(address[0], Integer.parseInt(address[1]), files).sendToServer();
-
-				break;
-			case "-e":
-				new CommandE(address[0], Integer.parseInt(address[1]), files).sendToServer();
-
-				break;
-			case "-g":
-				new CommandG(address[0], Integer.parseInt(address[1]), files).sendToServer();
-
-				break;
-		}*/
 	}
 }
