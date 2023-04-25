@@ -52,8 +52,6 @@ public class CommandUP {
 		ObjectOutputStream outStream = new ObjectOutputStream(socket.getOutputStream());
 		ObjectInputStream inStream = new ObjectInputStream(socket.getInputStream());
 		
-		System.out.println("cliente");
-		
 		outStream.writeObject("-u");
 		outStream.writeObject(this.username);
 		outStream.writeObject(this.password);

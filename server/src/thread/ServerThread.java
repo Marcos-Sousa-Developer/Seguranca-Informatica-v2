@@ -38,6 +38,7 @@ public class ServerThread extends Thread {
 				String username = (String) inStream.readObject();
 				String password = (String) inStream.readObject();
 
+				System.out.println("uuuuu" + username);
 				Boolean login = new VerifyUser().searchUser(username, password);
 			}
 			

@@ -1,8 +1,6 @@
 package commands;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
@@ -13,20 +11,23 @@ public class VerifyUser {
 	public VerifyUser() {
 		
 	}
-	
 
 	public Boolean searchUser(String username, String password) throws IOException, NoSuchAlgorithmException {
 		//primeiro procurar o username e obter a linha em que está
-
-		BufferedReader br = new BufferedReader(new FileReader("../cloud/passwords.txt"));
+		System.out.println("ddddddddddddddddddddddddddd");
+		System.out.println(new File("../../cloud/passwords.txt").exists());
+		BufferedReader br = new BufferedReader(new FileReader("../../cloud/passwords.txt"));
 		String lines; 
+		System.out.println("aaaaa" + username);
 		while ((lines = br.readLine()) != null) {
 			String[] elements = lines.split(";");
+			System.out.println("dddddd" + lines);
 			if (elements[0].equals(username)) {
+				System.out.println("cccccccc" + elements[0]);
 				//comparePassword(password);
 			}
 		}
-		return null;	
+		return true;	
 	}
 
 	private static final String ALGORITHM = "SHA-256";
