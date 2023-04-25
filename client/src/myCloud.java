@@ -102,7 +102,8 @@ public class myCloud {
 		
 		switch (args[2]) {
 			case "-au":
-				new CommandAU(address[0], Integer.parseInt(address[1]), args[3], args[4], args[5], files).searchUsername();
+				System.out.println("teste");
+				new CommandAU(address[0], Integer.parseInt(address[1]), args[3], args[4], args[5]).createUser();
 				break;
 			case "-u":
 				new CommandUP(address[0], Integer.parseInt(address[1]), args[3], args[5]).verifyLogin();

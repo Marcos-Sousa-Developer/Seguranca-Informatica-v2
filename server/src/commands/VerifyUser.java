@@ -14,20 +14,16 @@ public class VerifyUser {
 
 	public Boolean searchUser(String username, String password) throws IOException, NoSuchAlgorithmException {
 		//primeiro procurar o username e obter a linha em que está
-		System.out.println("ddddddddddddddddddddddddddd");
-		System.out.println(new File("../../cloud/passwords.txt").exists());
-		BufferedReader br = new BufferedReader(new FileReader("../../cloud/passwords.txt"));
+		BufferedReader br = new BufferedReader(new FileReader("../cloud/passwords.txt"));
 		String lines; 
-		System.out.println("aaaaa" + username);
 		while ((lines = br.readLine()) != null) {
 			String[] elements = lines.split(";");
-			System.out.println("dddddd" + lines);
 			if (elements[0].equals(username)) {
-				System.out.println("cccccccc" + elements[0]);
-				//comparePassword(password);
+				return comparePassword(password, elements[2]);
 			}
 		}
-		return true;	
+		br.close();
+		return false;	
 	}
 
 	private static final String ALGORITHM = "SHA-256";
@@ -43,15 +39,19 @@ public class VerifyUser {
 		return sb.toString();
 	}
 	 
-	/*public void comparePassword(String password) throws NoSuchAlgorithmException{ //IR BUSCAR O SALT AO FICHEIRO PASSWORDS
-		String hashedPassword = hash(password + CommandAU.getSalt());
+	public Boolean comparePassword(String password, String salt) throws NoSuchAlgorithmException{ //IR BUSCAR O SALT AO FICHEIRO PASSWORDS
+		String hashedPassword = hash(password + salt);
+		System.out.println("saltpass");
+		System.out.println(hashedPassword);
 		if (hashedPassword.equals(password)) {
-			System.out.println("as credenciais correspondem a um utlizador");
-			
+			System.out.println("Authorized");
+			return true;
 		}
 		else {
-			System.err.println("não há utilizadores com as credenciais dadas");
-			System.exit(-1);
+			System.err.println("Not authorized");
+			return false;
 		}	
-	}*/
+	}
+	
+	
 }

@@ -7,96 +7,62 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.PrintWriter;
+import java.net.ConnectException;
+import java.net.NoRouteToHostException;
+import java.net.Socket;
+import java.net.UnknownHostException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 
 public class CommandAU {
 
-	private String newUsername;
-	private String newPassword;
-	private String cert;
 	private String ip;
 	private int port;
-	private List<String> files;
-	private static String salt;
-	
-	public CommandAU(String ip, int port, String newUsername, String newPassword, String cert, List<String> files) {
+	private String username;
+	private String password;
+	private String cert;
+
+	public CommandAU(String ip, int port, String username, String password, String cert) {
 		this.ip = ip;
 		this.port = port;		
-		this.newUsername = newUsername;
-		this.newPassword = newPassword;
+		this.username = username;
+		this.password = password;
 		this.cert = cert;
-		this.files = files;
 	}
 
-	public void searchUsername() throws FileNotFoundException, NoSuchAlgorithmException {
-		String file = "../passwords.txt";
-
-		String toSearch = this.newUsername;
-		Scanner scanner = new Scanner(new File(file));
-		while (scanner.hasNextLine()) {
-			String line = scanner.nextLine(); 
-			String[] elements = line.split(";");
-			String firstElement = elements[0];
-			
-			if (firstElement.equals(toSearch)) {
-				
-				System.err.println("This username already exists.");
-		    	System.exit(-1);
-			}
-			else {
-				write();
-			}
+	public boolean createUser() throws IOException, ClassNotFoundException {
+		Socket socket = null;
+		try {
+			 socket = new Socket(this.ip, this.port);
 		}
-	}
-	
-	public static String saltPassword() {
-		String saltKey = "";
-		
-		//gerar chave salt
-		SecureRandom random = new SecureRandom();
-		byte[] salt = new byte[16];
-		random.nextBytes(salt);
-		return Base64.getEncoder().encodeToString(salt);	
-	}
-	
-	public static String getHashPassWithSalt(String passWithSalt) throws NoSuchAlgorithmException {
-		MessageDigest digest = MessageDigest.getInstance("SHA-256");
-		byte[] hash = digest.digest(passWithSalt.getBytes());
-		return Base64.getEncoder().encodeToString(hash);
-	}
-	
-	
-	
-	public void write() throws FileNotFoundException, NoSuchAlgorithmException {
-		String file = "../passwords.txt";
-		
-		salt = saltPassword();
-		String passWithSalt = salt + this.newPassword;
-		String hashOfPassWithSalt = getHashPassWithSalt(passWithSalt);
-
-		//Adição do user e da password ao ficheiro caso tudo esteja correto
-		String[] addUser = {this.newUsername, passWithSalt};
-	
-		PrintWriter add = new PrintWriter(file);
+		catch (ConnectException e) {
+			System.out.println("Connection refused, please check the Port");
+			System.exit(-1);
+		}
+		catch (UnknownHostException e) {
 			
-			for (int i = 0; i < addUser.length; i++) {
-				if(i>0) {
-					add.print(";");
-				}	
-				
-				add.print(addUser[i]);
-			}		
-	}
-	
-	public static String getSalt() {
-		return salt;
-	}
-	
-	public void setSalt(String salt) {
-		this.salt = salt;
+			System.out.println("Connection refused, please check the Host");
+			System.exit(-1);
+		} 
+		catch (NoRouteToHostException e) {
+			System.out.println("Connection refused, please check the Host");
+			System.exit(-1);
+		} 
+		
+		ObjectOutputStream outStream = new ObjectOutputStream(socket.getOutputStream());
+		ObjectInputStream inStream = new ObjectInputStream(socket.getInputStream());
+		
+		outStream.writeObject("-au");
+		outStream.writeObject(this.username);
+		outStream.writeObject(this.password);
+		outStream.writeObject(this.cert);
+		
+		return (Boolean) inStream.readObject();
 	}
 	
 	

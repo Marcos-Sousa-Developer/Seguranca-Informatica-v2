@@ -38,27 +38,40 @@ public class ServerThread extends Thread {
 				String username = (String) inStream.readObject();
 				String password = (String) inStream.readObject();
 
-				System.out.println("uuuuu" + username);
 				Boolean login = new VerifyUser().searchUser(username, password);
+				if(login) {
+					//true (vai buscar os outros comandos)
+					if (option.equals("-c")) {
+						
+						new VerifyCommandC().verify(inStream, outStream);
+						
+					} else if (option.equals("-s")) {
+						
+						new VerifyCommandS().verify(inStream, outStream);
+						
+					} else if (option.equals("-e")) {
+						
+						new VerifyCommandE().verify(inStream, outStream);
+						
+					} else if (option.equals("-g")) {
+						
+						new VerifyCommandG().verify(inStream, outStream);			
+					}
+				} else {
+					//false
+				}
+			} else if (option.equals("-au")) {
+				String username = (String) inStream.readObject();
+				String password = (String) inStream.readObject();
+				String cert = (String) inStream.readObject();
+				
+				Boolean login = new NewUser().searchUsername(username, password);
+				
+				System.out.println("novo user");
+				System.out.println(login);
+				
+				outStream.writeObject(login);
 			}
-			
-			
-
-			if (option.equals("-c")) {
-				
-				new VerifyCommandC().verify(inStream, outStream);
-				
-			} else if (option.equals("-s")) {
-				
-				new VerifyCommandS().verify(inStream, outStream);
-				
-			} else if (option.equals("-e")) {
-				
-				new VerifyCommandE().verify(inStream, outStream);
-				
-			} else if (option.equals("-g")) {
-				
-				new VerifyCommandG().verify(inStream, outStream);			}
 
 			inStream.close();
 			this.socket.close();
