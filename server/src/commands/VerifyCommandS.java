@@ -28,11 +28,10 @@ public class VerifyCommandS {
 				String fileName = (String) inStream.readObject();
 
 				// Check file exists on server
-				File fcifrado = new File("../cloud/files/" + fileName + ".cifrado");
 				File fassinado = new File("../cloud/files/" + fileName + ".assinado");
 				File fseguro = new File("../cloud/files/" + fileName + ".seguro");
 				
-				Boolean fileExistServer = fcifrado.exists() || fassinado.exists() || fseguro.exists();
+				Boolean fileExistServer = fassinado.exists() || fseguro.exists();
 
 				// Verify if file exists
 				if (!fileExistServer) {
