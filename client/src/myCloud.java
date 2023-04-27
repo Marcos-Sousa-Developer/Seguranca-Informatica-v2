@@ -102,7 +102,15 @@ public class myCloud {
 		
 		switch (args[2]) {
 			case "-au":
-				new CommandAU(address[0], Integer.parseInt(address[1]), args[3], args[4], args[5]).createUser();
+				Boolean iscreated = new CommandAU(address[0], Integer.parseInt(address[1]), args[3], args[4], args[5]).createUser();
+				if(!iscreated) {
+					System.err.println("This username already exists.");
+			    	System.exit(-1);
+				}
+				else {
+					System.err.println("User created.");
+			    	System.exit(0);
+				}
 				break;
 			case "-u":
 				Boolean login = new CommandUP(address[0], Integer.parseInt(address[1]), args[3], args[5]).verifyLogin();

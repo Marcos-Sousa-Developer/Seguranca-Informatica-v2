@@ -71,9 +71,9 @@ public class ServerThread extends Thread {
 				String password = (String) inStream.readObject();
 				String cert = (String) inStream.readObject();
 				
-				Boolean login = new NewUser().searchUsername(username, password);
+				Boolean newUser = new NewUser().searchUsername(username, password);
 				
-				outStream.writeObject(login);
+				outStream.writeObject(newUser);
 			}
 
 			inStream.close();

@@ -20,21 +20,18 @@ public class NewUser {
 	
 	public Boolean searchUsername(String username, String password) throws NoSuchAlgorithmException, IOException {
 
-		String toSearch = username;
 		Scanner scanner = new Scanner(new File("../cloud/passwords.txt"));
 		while (scanner.hasNextLine()) {
 			String line = scanner.nextLine(); 
 			String[] elements = line.split(";");
 			String firstElement = elements[0];
 			
-			if (firstElement.equals(toSearch)) {
-				System.err.println("This username already exists.");
-		    	System.exit(-1);
-			}
-			else {
-				write(username, password);
+			if (firstElement.equals(username)) {
+				return false;
 			}
 		}
+		write(username, password);
+		new File("../cloud/"+username).mkdirs();
 		return true;
 	}
 	
@@ -54,6 +51,7 @@ public class NewUser {
 	}
 	
 	public void write(String username, String password) throws NoSuchAlgorithmException, IOException {
+		System.out.println("changed1");
 		String file = "../cloud/passwords.txt";
 		
 		String salt = saltPassword();
@@ -64,12 +62,9 @@ public class NewUser {
 		FileWriter fw = new FileWriter(file, true);
 		
 		BufferedWriter bw = new BufferedWriter(fw);
+				
+		bw.append(username + ";" + hashOfPassWithSalt + ";" + salt + '\n');	
 		
-		PrintWriter pw = new PrintWriter(bw);
-		
-		pw.println(username + ";" + hashOfPassWithSalt + ";" + salt);	
-		
-		pw.close();
 		bw.close();
 		fw.close();
 	}
