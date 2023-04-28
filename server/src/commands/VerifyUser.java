@@ -3,6 +3,7 @@ package commands;
 import java.io.*;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.Base64;
 
 public class VerifyUser {
 	
@@ -15,27 +16,22 @@ public class VerifyUser {
 		while ((lines = br.readLine()) != null) {
 			String[] elements = lines.split(";");
 			if (elements[0].equals(username)) {
-				return comparePassword(password, elements[2]);
+				return comparePassword(password, elements[1], elements[2]);
 			}
 		}
 		br.close();
 		return false;	
 	}
 	
-	private static String hash(String input) throws NoSuchAlgorithmException {
-		MessageDigest md = MessageDigest.getInstance("SHA-256");
-		md.update(input.getBytes());
-		byte[] digest = md.digest();
-		StringBuilder sb = new StringBuilder();
-		for (byte b : digest) {
-			sb.append(String.format("%02x", b));
-		}
-		return sb.toString();
+	public static String getHashPassWithSalt(String passWithSalt) throws NoSuchAlgorithmException {
+		MessageDigest digest = MessageDigest.getInstance("SHA-256");
+		byte[] hash = digest.digest(passWithSalt.getBytes());
+		return Base64.getEncoder().encodeToString(hash);
 	}
 	 
-	public Boolean comparePassword(String password, String salt) throws NoSuchAlgorithmException{ //IR BUSCAR O SALT AO FICHEIRO PASSWORDS
-		String hashedPassword = hash(password + salt);
-		if (hashedPassword.equals(password)){
+	public Boolean comparePassword(String password, String passWithSalt, String salt) throws NoSuchAlgorithmException{ //IR BUSCAR O SALT AO FICHEIRO PASSWORDS
+		String hashedPassword = getHashPassWithSalt(salt + password);
+		if (hashedPassword.equals(passWithSalt)){
 			return true;
 		}
 		else {

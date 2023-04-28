@@ -6,9 +6,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.net.ConnectException;
-import java.net.NoRouteToHostException;
-import java.net.Socket;
 import java.net.UnknownHostException;
 import java.security.InvalidKeyException;
 import java.security.Key;
@@ -34,13 +31,9 @@ import javax.crypto.spec.SecretKeySpec;
 
 public class CommandE {
 
-	private final String ip;
-	private final int port;
 	private List<String> files;
 
-	public CommandE(String ip, int port, List<String> files) {
-		this.ip = ip;
-		this.port = port;
+	public CommandE(List<String> files) {
 		this.files = files;
 	}
 	
@@ -169,37 +162,7 @@ public class CommandE {
 	/**
 	 * Method to communicate with the server
 	 */
-	public void sendToServer() throws UnknownHostException, IOException, InvalidKeyException, NoSuchAlgorithmException, NoSuchPaddingException, SignatureException, UnrecoverableKeyException, KeyStoreException, CertificateException, IllegalBlockSizeException, BadPaddingException, ClassNotFoundException {
-		
-		Socket socket = null;
-		try {
-			 socket = new Socket(this.ip, this.port);
-			 
-			//---------------TLS------------------
-			/*Socket socket;
-	
-		    System.setProperty("javax.net.ssl.trustStore", "truststore.client");
-		    System.setProperty("javax.net.ssl.trustStorePassword", "123456");
-		    SocketFactory sf = SSLSocketFactory.getDefault( );
-		    socket = sf.createSocket("127.0.0.1", 9096);*/
-		   //------------------------------------
-		}
-		catch (ConnectException e) {
-			System.out.println("Connection refused, please check the Port");
-			System.exit(-1);
-		}
-		catch (UnknownHostException e) {
-			
-			System.out.println("Connection refused, please check the Host");
-			System.exit(-1);
-		}
-		catch (NoRouteToHostException e) {
-			System.out.println("Connection refused, please check the Host");
-			System.exit(-1);
-		}
-		
-		ObjectOutputStream outStream = new ObjectOutputStream(socket.getOutputStream());
-		ObjectInputStream inStream = new ObjectInputStream(socket.getInputStream());
+	public void sendToServer(ObjectOutputStream outStream, ObjectInputStream inStream) throws UnknownHostException, IOException, InvalidKeyException, NoSuchAlgorithmException, NoSuchPaddingException, SignatureException, UnrecoverableKeyException, KeyStoreException, CertificateException, IllegalBlockSizeException, BadPaddingException, ClassNotFoundException {
 		
 		outStream.writeObject("-e");  
 		outStream.writeObject(this.files.size());

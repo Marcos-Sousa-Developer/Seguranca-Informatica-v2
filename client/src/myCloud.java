@@ -1,6 +1,12 @@
+import java.net.ConnectException;
+import java.net.NoRouteToHostException;
+import java.net.Socket;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 
 import commands.CommandAU;
 import commands.CommandC;
@@ -93,16 +99,40 @@ public class myCloud {
 	 */
 	public static void main(String[] args) throws Exception {
 		
-		
 		String[] address = verifyCommand(args);
 		
-		//Split and get the files to manage
-		List<String> files = new ArrayList<>(Arrays.asList(args)).subList(3, args.length);
+		Socket socket = null;
+		try {
+			 socket = new Socket(address[0], Integer.parseInt(address[1]));
+			 
+			//---------------TLS------------------
+		     /*Socket socket;
+	
+		     System.setProperty("javax.net.ssl.trustStore", "truststore.client");
+		     System.setProperty("javax.net.ssl.trustStorePassword", "123456");
+		     SocketFactory sf = SSLSocketFactory.getDefault( );
+		     socket = sf.createSocket("127.0.0.1", 9096);*/
+		    //------------------------------------
+		}
+		catch (ConnectException e) {
+			System.out.println("Connection refused, please check the Port");
+			System.exit(-1);
+		}
+		catch (UnknownHostException e) {
+			System.out.println("Connection refused, please check the Host");
+			System.exit(-1);
+		} 
+		catch (NoRouteToHostException e) {
+			System.out.println("Connection refused, please check the Host");
+			System.exit(-1);
+		}
 		
+		ObjectOutputStream outStream = new ObjectOutputStream(socket.getOutputStream());
+		ObjectInputStream inStream = new ObjectInputStream(socket.getInputStream());
 		
 		switch (args[2]) {
 			case "-au":
-				Boolean iscreated = new CommandAU(address[0], Integer.parseInt(address[1]), args[3], args[4], args[5]).createUser();
+				Boolean iscreated = new CommandAU(args[3], args[4], args[5]).createUser(outStream, inStream);
 				if(!iscreated) {
 					System.err.println("This username already exists.");
 			    	System.exit(-1);
@@ -113,7 +143,7 @@ public class myCloud {
 				}
 				break;
 			case "-u":
-				Boolean login = new CommandUP(address[0], Integer.parseInt(address[1]), args[3], args[5]).verifyLogin();
+				Boolean login = new CommandUP(args[3], args[5]).verifyLogin(outStream, inStream);
 				
 				if(login) {
 					System.out.println("Authorized");
@@ -128,21 +158,27 @@ public class myCloud {
 						//new CommandD(address[0], Integer.parseInt(address[1]), files).sendToServer();
 					}
 					
+					//Split and get the files to manage
+					List<String> files = new ArrayList<>(Arrays.asList(args)).subList(optionIndex + 1, args.length);
+					
+					System.out.println(files);
+					
+					
 					switch (args[optionIndex]) {
 					case "-c":
-						new CommandC(address[0], Integer.parseInt(address[1]), files).sendToServer();
+						new CommandC(files).sendToServer(outStream, inStream);
 
 						break;
 					case "-s":
-						new CommandS(address[0], Integer.parseInt(address[1]), files).sendToServer();
+						new CommandS(files).sendToServer(outStream, inStream);
 
 						break;
 					case "-e":
-						new CommandE(address[0], Integer.parseInt(address[1]), files).sendToServer();
+						new CommandE(files).sendToServer(outStream, inStream);
 
 						break;
 					case "-g":
-						new CommandG(address[0], Integer.parseInt(address[1]), files).sendToServer();
+						new CommandG(files).sendToServer(outStream, inStream);
 
 						break;
 				}
@@ -153,5 +189,6 @@ public class myCloud {
 				}
 				break;
 		}
+		socket.close();
 	}
 }

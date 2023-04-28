@@ -36,13 +36,9 @@ import javax.crypto.spec.SecretKeySpec;
 
 public class CommandC {
 	
-	private String ip;
-	private int port;
 	private List<String> files;
 
-	public CommandC(String ip, int port, List<String> files) {
-		this.ip = ip;
-		this.port = port;
+	public CommandC(List<String> files) {
 		this.files = files;
 	}
 	
@@ -135,41 +131,14 @@ public class CommandC {
 	
 	/**
 	 * Method to communicate with the server
+	 * @Socket socket
 	 */
-	public void sendToServer() throws UnknownHostException, IOException, ClassNotFoundException, InvalidKeyException, NoSuchAlgorithmException, NoSuchPaddingException, UnrecoverableKeyException, KeyStoreException, CertificateException, IllegalBlockSizeException {
-		
-		Socket socket = null;
-		try {
-			 socket = new Socket(this.ip, this.port);
-			 
-			//---------------TLS------------------
-		     /*Socket socket;
-	
-		     System.setProperty("javax.net.ssl.trustStore", "truststore.client");
-		     System.setProperty("javax.net.ssl.trustStorePassword", "123456");
-		     SocketFactory sf = SSLSocketFactory.getDefault( );
-		     socket = sf.createSocket("127.0.0.1", 9096);*/
-		    //------------------------------------
-		}
-		catch (ConnectException e) {
-			System.out.println("Connection refused, please check the Port");
-			System.exit(-1);
-		}
-		catch (UnknownHostException e) {
-			
-			System.out.println("Connection refused, please check the Host");
-			System.exit(-1);
-		} 
-		catch (NoRouteToHostException e) {
-			System.out.println("Connection refused, please check the Host");
-			System.exit(-1);
-		}
-		
-		ObjectOutputStream outStream = new ObjectOutputStream(socket.getOutputStream());
-		ObjectInputStream inStream = new ObjectInputStream(socket.getInputStream());
+	public void sendToServer(ObjectOutputStream outStream, ObjectInputStream inStream) throws IOException, ClassNotFoundException, InvalidKeyException, NoSuchAlgorithmException, NoSuchPaddingException, UnrecoverableKeyException, KeyStoreException, CertificateException, IllegalBlockSizeException {
 		
 		outStream.writeObject("-c");
+		System.out.println("teste1");
 		outStream.writeObject(this.files.size());
+		System.out.println("teste2");
 		
 		for (String fileName : this.files) {
 			
@@ -257,6 +226,5 @@ public class CommandC {
 			}
 		}
 		outStream.close();
-		socket.close();
 	}
 }

@@ -25,16 +25,9 @@ import java.io.File;
 
 public class CommandS {
 	
-	private String ip; 
-	
-	private int port; 
-	
 	private List<String> files;
 	
-	
-	public CommandS(String ip, int port, List<String> files) { 
-		this.ip = ip;
-		this.port = port;
+	public CommandS(List<String> files) { 
 		this.files = files;
 	}
 	
@@ -70,46 +63,12 @@ public class CommandS {
 		signature.initSign(privatekey); 		
 		
 		return signature;
-		
 	}
 	
 	/**
 	 * Method to communicate with the server
 	 */
-	public void sendToServer() throws UnknownHostException, IOException, NoSuchAlgorithmException, SignatureException, ClassNotFoundException, UnrecoverableKeyException, InvalidKeyException, KeyStoreException, CertificateException {
-		
-		Socket socket = null;
-		try {
-			 socket = new Socket(this.ip, this.port);
-			 
-			//---------------TLS------------------
-			/*Socket socket;
-	
-		    System.setProperty("javax.net.ssl.trustStore", "truststore.client");
-		    System.setProperty("javax.net.ssl.trustStorePassword", "123456");
-		    SocketFactory sf = SSLSocketFactory.getDefault( );
-		    socket = sf.createSocket("127.0.0.1", 9096);*/
-		   //------------------------------------
-		}
-		catch (ConnectException e) {
-			System.out.println("Connection refused, please check the Port");
-			System.exit(-1);
-		}
-		catch (UnknownHostException e) {
-			
-			System.out.println("Connection refused, please check the Host");
-			System.exit(-1);
-		}
-		catch (NoRouteToHostException e) {
-			System.out.println("Connection refused, please check the Host");
-			System.exit(-1);
-		}
-		
-		//Send data to server
-		ObjectOutputStream outStream = new ObjectOutputStream(socket.getOutputStream());
-		
-		//Read from Server
-		ObjectInputStream inStream = new ObjectInputStream(socket.getInputStream());
+	public void sendToServer(ObjectOutputStream outStream, ObjectInputStream inStream) throws UnknownHostException, IOException, NoSuchAlgorithmException, SignatureException, ClassNotFoundException, UnrecoverableKeyException, InvalidKeyException, KeyStoreException, CertificateException {
 		
 		//Send the option first
 		outStream.writeObject("-s");
@@ -166,7 +125,6 @@ public class CommandS {
 					fileInStream.close();
 					
 			        System.out.println("The file " + fileName + " have been sent correctly.");
-					
 				}
 				//File exist on the server
 				else {
@@ -177,7 +135,6 @@ public class CommandS {
 			else {
 				outStream.writeObject(false);
 				System.err.println("The file " + fileName + " doesn't exist. You must provide a existing file.");
-
 			}
 		}
 	}

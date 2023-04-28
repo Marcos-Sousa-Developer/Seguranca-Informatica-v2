@@ -2,14 +2,10 @@ package commands;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.net.ConnectException;
-import java.net.NoRouteToHostException;
-import java.net.Socket;
 import java.net.UnknownHostException;
 import java.security.InvalidKeyException;
 import java.security.Key;
@@ -26,22 +22,16 @@ import java.util.List;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
-import javax.crypto.CipherInputStream;
 import javax.crypto.CipherOutputStream;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
-import javax.crypto.SecretKey;
-import javax.crypto.spec.SecretKeySpec;
+
 
 public class CommandG {
 	
-	private String ip;
-	private int port;
 	private List<String> files;
 
-	public CommandG(String ip, int port, List<String> files) {
-		this.ip = ip;
-		this.port = port;
+	public CommandG(List<String> files) {
 		this.files = files;
 	}
 	
@@ -66,7 +56,7 @@ public class CommandG {
 		s.initVerify(publicKey);
 		
 		//get the received file to verify
-		FileInputStream fileToVerify = new FileInputStream("../receiveidFiles/"+fileName);
+		FileInputStream fileToVerify = new FileInputStream("../receivedFiles/"+fileName);
 		
 		//get total file length
 		int totalFileLength =  fileToVerify.available();
@@ -129,7 +119,7 @@ public class CommandG {
 		//get cipher in DECRYPT mode
 		Cipher c = initDecryptMode(secretKeyInByte);
 		
-		FileOutputStream fileOutput = new FileOutputStream("../receiveidFiles/" + fileName);
+		FileOutputStream fileOutput = new FileOutputStream("../receivedFiles/" + fileName);
 		
 		CipherOutputStream cipherOut= new CipherOutputStream(fileOutput, c);
 		
@@ -164,45 +154,15 @@ public class CommandG {
 	/**
 	 * Method to communicate with the server
 	 */
-	public void sendToServer() throws UnknownHostException, IOException, ClassNotFoundException, InvalidKeyException, NoSuchAlgorithmException, NoSuchPaddingException, UnrecoverableKeyException, KeyStoreException, CertificateException, IllegalBlockSizeException, SignatureException, BadPaddingException {
+	public void sendToServer(ObjectOutputStream outStream, ObjectInputStream inStream) throws UnknownHostException, IOException, ClassNotFoundException, InvalidKeyException, NoSuchAlgorithmException, NoSuchPaddingException, UnrecoverableKeyException, KeyStoreException, CertificateException, IllegalBlockSizeException, SignatureException, BadPaddingException {
 
-		Socket socket = null;
-		try {
-			 socket = new Socket(this.ip, this.port);
-			 
-			//---------------TLS------------------
-			/*Socket socket;
-	
-		    System.setProperty("javax.net.ssl.trustStore", "truststore.client");
-		    System.setProperty("javax.net.ssl.trustStorePassword", "123456");
-		    SocketFactory sf = SSLSocketFactory.getDefault( );
-		    socket = sf.createSocket("127.0.0.1", 9096);*/
-		   //------------------------------------
-		}
-		catch (ConnectException e) {
-			System.out.println("Connection refused, please check the address or port");
-			System.exit(-1);
-		}
-		catch (UnknownHostException e) {
-			
-			System.out.println("Connection refused, please check the Host");
-			System.exit(-1);
-		}
-		catch (NoRouteToHostException e) {
-			System.out.println("Connection refused, please check the Host");
-			System.exit(-1);
-		}
-		
-		ObjectOutputStream outStream = new ObjectOutputStream(socket.getOutputStream());
-		ObjectInputStream inStream = new ObjectInputStream(socket.getInputStream());
-		
 		//send type option to get a correct manager
 		outStream.writeObject("-g");
 		outStream.writeObject(this.files.size());
 		
 		for (String fileName : this.files) {
 			
-			File fileToVerify = new File("../receiveidFiles/" + fileName); 
+			File fileToVerify = new File("../receivedFiles/" + fileName); 
 			
 			boolean alreadyReceived = fileToVerify.exists();
 			
@@ -231,7 +191,7 @@ public class CommandG {
 						byte[] signatureInByte = new byte[256];
 						inStream.read(signatureInByte);
 						
-						FileOutputStream outFile = new FileOutputStream("../receiveidFiles/" + fileName); 
+						FileOutputStream outFile = new FileOutputStream("../receivedFiles/" + fileName); 
 										
 						int totalFileLength = (int) inStream.readObject();
 						
@@ -239,7 +199,7 @@ public class CommandG {
 														
 						int contentFileLength = inStream.read(bufferData);
 						
-						//get file chunks and store in "../receiveidFiles/"
+						//get file chunks and store in "../receivedFiles/"
 						while (contentFileLength > 0 && totalFileLength > 0) {
 							if (totalFileLength >= contentFileLength) {
 								outFile.write(bufferData, 0, contentFileLength);
