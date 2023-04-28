@@ -3,6 +3,12 @@ package commands;
 import java.util.Base64;
 import java.util.List;
 import java.util.Scanner;
+
+import javax.net.ServerSocketFactory;
+import javax.net.SocketFactory;
+import javax.net.ssl.SSLServerSocketFactory;
+import javax.net.ssl.SSLSocketFactory;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -13,6 +19,7 @@ import java.io.ObjectOutputStream;
 import java.io.PrintWriter;
 import java.net.ConnectException;
 import java.net.NoRouteToHostException;
+import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.security.MessageDigest;
@@ -39,6 +46,15 @@ public class CommandAU {
 		Socket socket = null;
 		try {
 			 socket = new Socket(this.ip, this.port);
+			 
+			//---------------TLS------------------
+		     /*Socket socket;
+	
+		     System.setProperty("javax.net.ssl.trustStore", "truststore.client");
+		     System.setProperty("javax.net.ssl.trustStorePassword", "123456");
+		     SocketFactory sf = SSLSocketFactory.getDefault( );
+		     socket = sf.createSocket("127.0.0.1", 9096);*/
+		    //------------------------------------
 		}
 		catch (ConnectException e) {
 			System.out.println("Connection refused, please check the Port");

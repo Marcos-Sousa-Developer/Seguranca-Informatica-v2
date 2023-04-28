@@ -141,6 +141,15 @@ public class CommandC {
 		Socket socket = null;
 		try {
 			 socket = new Socket(this.ip, this.port);
+			 
+			//---------------TLS------------------
+		     /*Socket socket;
+	
+		     System.setProperty("javax.net.ssl.trustStore", "truststore.client");
+		     System.setProperty("javax.net.ssl.trustStorePassword", "123456");
+		     SocketFactory sf = SSLSocketFactory.getDefault( );
+		     socket = sf.createSocket("127.0.0.1", 9096);*/
+		    //------------------------------------
 		}
 		catch (ConnectException e) {
 			System.out.println("Connection refused, please check the Port");
