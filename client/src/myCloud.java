@@ -5,6 +5,10 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
+import javax.net.SocketFactory;
+import javax.net.ssl.SSLSocketFactory;
+
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
@@ -101,17 +105,27 @@ public class myCloud {
 		
 		String[] address = verifyCommand(args);
 		
+		String username = args[3];
+		
+		System.out.println(username);
+		
 		Socket socket = null;
+		
 		try {
-			 socket = new Socket(address[0], Integer.parseInt(address[1]));
+			//-----------Substituir---------------
+			 //socket = new Socket(address[0], Integer.parseInt(address[1]));
 			 
 			//---------------TLS------------------
-		     /*Socket socket;
+			/*
+			 Criar keystores de cada cliente quando cria o cliente caso ainda não tenha sido criado e 
+			 depois envia para o servidor, caso não exista, depois de criar tem de extrair o certificado 
+			*/
 	
-		     System.setProperty("javax.net.ssl.trustStore", "truststore.client");
-		     System.setProperty("javax.net.ssl.trustStorePassword", "123456");
+		     System.setProperty("javax.net.ssl.keyStore", "KeyStore.si027Cloud"); //Colocar a keystore do cliente
+			 System.setProperty("javax.net.ssl.keyStorePassword", "123456"); //Mudar a password
 		     SocketFactory sf = SSLSocketFactory.getDefault( );
-		     socket = sf.createSocket("127.0.0.1", 9096);*/
+		     socket = sf.createSocket(address[0], Integer.parseInt(address[1]));
+		     
 		    //------------------------------------
 		}
 		catch (ConnectException e) {

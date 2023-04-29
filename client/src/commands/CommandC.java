@@ -87,7 +87,7 @@ public class CommandC {
 	 */
 	private void cipherKey(String fileName) throws KeyStoreException, NoSuchAlgorithmException, CertificateException, IOException, UnrecoverableKeyException, NoSuchPaddingException, InvalidKeyException, IllegalBlockSizeException {
 		
-		//get the 	KeyStore
+		//get the KeyStore
 		FileInputStream kfile = new FileInputStream("KeyStore.si027Cloud"); 
 	    KeyStore kstore = KeyStore.getInstance("PKCS12");
 	    kstore.load(kfile, "si027marcos&rafael".toCharArray());

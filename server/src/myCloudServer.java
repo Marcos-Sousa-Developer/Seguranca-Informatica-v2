@@ -1,6 +1,10 @@
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
+
+import javax.net.ServerSocketFactory;
+import javax.net.ssl.SSLServerSocketFactory;
+
 import commands.VerifyPort;
 import thread.ServerThread;
 
@@ -27,7 +31,7 @@ public class myCloudServer {
 	 * Initialize server
 	 * @String[] list of arguments to check 
 	 */
-	public static void main(String[] args) throws IOException  {
+	public static void main(String[] args) throws IOException {
 		int port = verifyPort(args);
 		myCloudServer server = new myCloudServer();
 		server.startServer(port);
@@ -38,8 +42,21 @@ public class myCloudServer {
 	 * @integer port number
 	 */
 	private void startServer(int port) throws IOException {
-		ServerSocket sSoc = null;
-		sSoc = new ServerSocket(port);
+		
+		//---------------Substituir------------------
+		//ServerSocket sSoc = null;
+		//sSoc = new ServerSocket(port);
+		
+		//------------------TLS----------------------
+		ServerSocket sSoc;
+
+		System.setProperty("javax.net.ssl.keyStore", "keystore.server");
+		System.setProperty("javax.net.ssl.keyStorePassword", "si027marcos&rafael&daniela");
+		ServerSocketFactory ssf = SSLServerSocketFactory.getDefault();
+		sSoc = ssf.createServerSocket(port);
+
+		//-------------------------------------------
+		
 		System.out.println("Server connected");
 		
 		while(true) {
