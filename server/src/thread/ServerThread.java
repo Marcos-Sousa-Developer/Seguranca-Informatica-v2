@@ -56,6 +56,26 @@ public class ServerThread extends Thread {
 					} else if (option2.equals("-g")) {
 						
 						new VerifyCommandG().verify(inStream, outStream);			
+					
+					}else if (option2.equals("-d")) {
+					
+						String option3 = (String) inStream.readObject();
+						
+						new VerifyCommandD().verify(inStream, outStream)
+						
+						
+						if (option3.equals("-c")) {
+							
+							new VerifyCommandC().verify(inStream, outStream);
+							
+						} else if (option3.equals("-s")) {
+							
+							new VerifyCommandS().verify(inStream, outStream);
+							
+						} else if (option3.equals("-e")) {
+							
+							new VerifyCommandE().verify(inStream, outStream);
+							
 					}
 				} else {
 					//false

@@ -34,7 +34,7 @@ public class myCloud {
 		
 		if(args.length < 4) {
 			System.err.println("Command not valid.");
-			System.err.println("Example: myCloud -a <serverAddress> {-c || -s || -e || -g} {<filenames>}+");
+			System.err.println("Example: myCloud -a <serverAddress> {-c || -s || -e || -g || -d} {<filenames>}+");
 	    	System.exit(-1);
 		}
 
@@ -53,30 +53,30 @@ public class myCloud {
 			case "-u":
 				if(!(args[4].equals("-p") && args.length > 6)){
 					System.err.println("Command not valid.");
-					System.err.println("Example: myCloud -a <serverAddress> -u <username> -p <password> {-c || -s || -e || -g} {<filenames>}+");
-					System.err.println("Example: myCloud -a <serverAddress> -u <username> -p <password> -d <username de destinatário> {-c || -s || -e || -g} {<filenames>}+");
+					System.err.println("Example: myCloud -a <serverAddress> -u <username> -p <password> {-c || -s || -e || -g || -d} {<filenames>}+");
+					System.err.println("Example: myCloud -a <serverAddress> -u <username> -p <password> -d <username de destinatário> {-c || -s || -e || -g || -d} {<filenames>}+");
 					System.exit(-1);
 				}
 				else if(!args[6].equals("-d")) {
 					
-					String[] options = new String[]{"-c", "-s", "-e", "-g"};
+					String[] options = new String[]{"-c", "-s", "-e", "-g", "-d"};
 					
 					if(!Arrays.asList(options).contains(args[6])){
 						System.err.println("You must provide a valid option.");
-						System.err.println("Valid options: -c || -s || -e || -g");
+						System.err.println("Valid options: -c || -s || -e || -g || -d");
 				    	System.exit(-1);
 					}
 					else if (!(args.length > 7)){
 						System.err.println("Command not valid.");
-						System.err.println("Example: myCloud -a <serverAddress> -u <username> -p <password> {-c || -s || -e || -g} {<filenames>}+");
+						System.err.println("Example: myCloud -a <serverAddress> -u <username> -p <password> {-c || -s || -e || -g || -d} {<filenames>}+");
 				    	System.exit(-1);
 					}
 				} else { //Verifica caso a opcao -d seja dada
-					String[] options = new String[]{"-c", "-s", "-e", "-g"};
+					String[] options = new String[]{"-c", "-s", "-e", "-g", "-d"};
 					
 					if(!((args.length > 9) && Arrays.asList(options).contains(args[8]))){
 						System.err.println("Command not valid.");
-						System.err.println("Example: myCloud -a <serverAddress> -u <username> -p <password> -d <username de destinatário> {-c || -s || -e || -g} {<filenames>}+");
+						System.err.println("Example: myCloud -a <serverAddress> -u <username> -p <password> -d <username de destinatário> {-c || -s || -e || -g || -d} {<filenames>}+");
 				    	System.exit(-1);
 					}
 				}
@@ -166,11 +166,15 @@ public class myCloud {
 					
 					if(args[6].equals("-d")) {
 						optionIndex = 8;
+						optionIndex = 7;
+						String destUsername = args[7];
+						String commandToDo = args[8];
 						//enviar ficheiros para o servidor para outros utilizadores
 						//se não tiver previamente o certificado do destinatário, pede ao servidor
 						//Se a maria enviar ficheiros para alice, os ficheiros devem de ficar com o nome "aa.pdf.assinado.maria"
-						//new CommandD(address[0], Integer.parseInt(address[1]), files).sendToServer();
-					}
+						List<String> filesDestUsername = new ArrayList<>(Arrays.asList(args)).subList(optionIndex, args.length);
+						new CommandD(address[0], Integer.parseInt(address[1]), args[3], filesDestUsername, destUsername, commandToDo).sendToServer(outStream, inStream);
+					}	
 					
 					//Split and get the files to manage
 					List<String> files = new ArrayList<>(Arrays.asList(args)).subList(optionIndex + 1, args.length);
