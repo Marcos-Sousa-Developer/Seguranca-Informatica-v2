@@ -14,6 +14,7 @@ import java.io.ObjectOutputStream;
 
 import commands.CommandAU;
 import commands.CommandC;
+//import commands.CommandD;
 import commands.CommandE;
 import commands.CommandG;
 import commands.CommandS;
@@ -160,7 +161,7 @@ public class myCloud {
 			    	System.exit(-1);
 				}
 				else {
-					System.err.println("User created.");
+					System.err.println("User " + "username" + " created.");
 			    	System.exit(0);
 				}
 				break;

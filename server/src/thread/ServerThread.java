@@ -28,9 +28,10 @@ public class ServerThread extends Thread {
 			
 			String option1 = (String) inStream.readObject();
 			
+			String username = (String) inStream.readObject();
+			String password = (String) inStream.readObject();
+			
 			if (option1.equals("-u")){
-				String username = (String) inStream.readObject();
-				String password = (String) inStream.readObject();
 
 				Boolean login = new VerifyUser().searchUser(username, password);
 				
@@ -68,11 +69,11 @@ public class ServerThread extends Thread {
 							new VerifyCommandC().verify(inStream, outStream);
 							
 						} else if (option3.equals("-s")) {
-							
+								
 							new VerifyCommandS().verify(inStream, outStream);
-							
+								
 						} else if (option3.equals("-e")) {
-							
+								
 							new VerifyCommandE().verify(inStream, outStream);
 
 						}
@@ -80,15 +81,16 @@ public class ServerThread extends Thread {
 						//false
 					}
 				}
+				
 			} else if (option1.equals("-au")) {
-				String username = (String) inStream.readObject();
-				String password = (String) inStream.readObject();
+
 				String cert = (String) inStream.readObject();
-				
+			
 				Boolean newUser = new NewUser().searchUsername(username, password);
-				
+			
 				outStream.writeObject(newUser);
 			}
+
 
 			inStream.close();
 			this.socket.close();
