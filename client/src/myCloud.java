@@ -15,7 +15,11 @@ import java.io.ObjectOutputStream;
 import commands.CommandAU;
 import commands.CommandC;
 <<<<<<< HEAD
+<<<<<<< HEAD
 import commands.CommandD;
+=======
+//import commands.CommandD;
+>>>>>>> 2e1e7016b13e63fd58cd3af3dcd533e2b6e12d31
 =======
 //import commands.CommandD;
 >>>>>>> 2e1e7016b13e63fd58cd3af3dcd533e2b6e12d31
@@ -174,35 +178,17 @@ public class myCloud {
 				
 				if(login) {
 					System.out.println("Authorized");
-<<<<<<< HEAD
-
-=======
 					
-					int optionIndex = 6;
 					
-					if(args[6].equals("-d")) {
-						optionIndex = 8;
-						optionIndex = 7;
-						String destUsername = args[7];
-						String commandToDo = args[8];
-						//enviar ficheiros para o servidor para outros utilizadores
-						//se não tiver previamente o certificado do destinatário, pede ao servidor
-						//Se a maria enviar ficheiros para alice, os ficheiros devem de ficar com o nome "aa.pdf.assinado.maria"
-						List<String> filesDestUsername = new ArrayList<>(Arrays.asList(args)).subList(optionIndex, args.length);
-						//new CommandD(address[0], Integer.parseInt(address[1]), args[3], filesDestUsername, destUsername, commandToDo).sendToServer(outStream, inStream);
-					}	
 					
->>>>>>> 2e1e7016b13e63fd58cd3af3dcd533e2b6e12d31
 					//Split and get the files to manage
 					List<String> files = new ArrayList<>(Arrays.asList(args)).subList(7, args.length);
 					
 					//System.out.println(files);
 					
-<<<<<<< HEAD
 					switch (args[6]) {
-=======
-					switch (args[optionIndex]) {
->>>>>>> 2e1e7016b13e63fd58cd3af3dcd533e2b6e12d31
+					
+ 
 					case "-c":
 						new CommandC(files).sendToServer(outStream, inStream);
 
