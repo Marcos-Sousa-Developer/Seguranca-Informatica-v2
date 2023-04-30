@@ -14,7 +14,7 @@ public class VerifyCommandD {
 	 * @ObjectInputStream inStream
 	 * @ObjectOutputStream outStream
 	 */
-	public void verify(ObjectInputStream inStream, ObjectOutputStream outStream) {
+	public void verify(ObjectInputStream inStream, ObjectOutputStream outStream) throws IOException {
 		int numFiles = (int) inStream.readObject();
 
 		for (int i = 0; i < numFiles; i++) {
@@ -23,13 +23,13 @@ public class VerifyCommandD {
 		
 			if (fileExistClient) {
 				//check if files exists - server~
-				if (!fileExistServer) {
+				/*if (!fileExistServer) {
 					
 				}
 				else {
 					System.out.println("The file " + fileName + " already exist in server.");
-				}
+				}*/
 			}
-			
 		}
+	}
 }

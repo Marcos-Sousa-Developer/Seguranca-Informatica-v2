@@ -14,7 +14,11 @@ import java.io.ObjectOutputStream;
 
 import commands.CommandAU;
 import commands.CommandC;
+<<<<<<< HEAD
 import commands.CommandD;
+=======
+//import commands.CommandD;
+>>>>>>> 2e1e7016b13e63fd58cd3af3dcd533e2b6e12d31
 import commands.CommandE;
 import commands.CommandG;
 import commands.CommandS;
@@ -107,26 +111,34 @@ public class myCloud {
 		String[] address = verifyCommand(args);
 		
 		String username = args[3];
+		String userPassword = null;
 		
-		System.out.println(username);
+		System.out.println(args[2]);
+		
+		if(args[2].equals("-au")) {
+			userPassword = args[4];	
+		} 
+		if(args[2].equals("-u")) {
+			userPassword = args[5];
+		}
 		
 		Socket socket = null;
 		
 		try {
 			//-----------Substituir---------------
-			 //socket = new Socket(address[0], Integer.parseInt(address[1]));
+			 socket = new Socket(address[0], Integer.parseInt(address[1]));
 			 
 			//---------------TLS------------------
 			/*
 			 Criar keystores de cada cliente quando cria o cliente caso ainda não tenha sido criado e 
 			 depois envia para o servidor, caso não exista, depois de criar tem de extrair o certificado 
 			*/
-	
-		     System.setProperty("javax.net.ssl.keyStore", "KeyStore.si027Cloud"); //Colocar a keystore do cliente
-			 System.setProperty("javax.net.ssl.keyStorePassword", "123456"); //Mudar a password
+			/*
+		     System.setProperty("javax.net.ssl.trustStore", username + ".truststore"); 
+			 System.setProperty("javax.net.ssl.trustStorePassword", userPassword);
 		     SocketFactory sf = SSLSocketFactory.getDefault( );
-		     socket = sf.createSocket(address[0], Integer.parseInt(address[1]));
-		     
+		     socket = sf.createSocket(address[0], Integer.parseInt(address[1])); //ERRO AQUI
+		     */
 		    //------------------------------------
 		}
 		catch (ConnectException e) {
@@ -153,7 +165,7 @@ public class myCloud {
 			    	System.exit(-1);
 				}
 				else {
-					System.err.println("User created.");
+					System.err.println("User " + "username" + " created.");
 			    	System.exit(0);
 				}
 				break;
@@ -162,13 +174,35 @@ public class myCloud {
 				
 				if(login) {
 					System.out.println("Authorized");
+<<<<<<< HEAD
 
+=======
+					
+					int optionIndex = 6;
+					
+					if(args[6].equals("-d")) {
+						optionIndex = 8;
+						optionIndex = 7;
+						String destUsername = args[7];
+						String commandToDo = args[8];
+						//enviar ficheiros para o servidor para outros utilizadores
+						//se não tiver previamente o certificado do destinatário, pede ao servidor
+						//Se a maria enviar ficheiros para alice, os ficheiros devem de ficar com o nome "aa.pdf.assinado.maria"
+						List<String> filesDestUsername = new ArrayList<>(Arrays.asList(args)).subList(optionIndex, args.length);
+						//new CommandD(address[0], Integer.parseInt(address[1]), args[3], filesDestUsername, destUsername, commandToDo).sendToServer(outStream, inStream);
+					}	
+					
+>>>>>>> 2e1e7016b13e63fd58cd3af3dcd533e2b6e12d31
 					//Split and get the files to manage
 					List<String> files = new ArrayList<>(Arrays.asList(args)).subList(7, args.length);
 					
 					//System.out.println(files);
 					
+<<<<<<< HEAD
 					switch (args[6]) {
+=======
+					switch (args[optionIndex]) {
+>>>>>>> 2e1e7016b13e63fd58cd3af3dcd533e2b6e12d31
 					case "-c":
 						new CommandC(files).sendToServer(outStream, inStream);
 

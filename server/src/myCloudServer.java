@@ -44,17 +44,18 @@ public class myCloudServer {
 	private void startServer(int port) throws IOException {
 		
 		//---------------Substituir------------------
-		//ServerSocket sSoc = null;
-		//sSoc = new ServerSocket(port);
+		ServerSocket sSoc = null;
+		sSoc = new ServerSocket(port);
 		
 		//------------------TLS----------------------
+		/*
 		ServerSocket sSoc;
 
 		System.setProperty("javax.net.ssl.keyStore", "keystore.server");
 		System.setProperty("javax.net.ssl.keyStorePassword", "si027marcos&rafael&daniela");
 		ServerSocketFactory ssf = SSLServerSocketFactory.getDefault();
 		sSoc = ssf.createServerSocket(port);
-
+		*/
 		//-------------------------------------------
 		
 		System.out.println("Server connected");
