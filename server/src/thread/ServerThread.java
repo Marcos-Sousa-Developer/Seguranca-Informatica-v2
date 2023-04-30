@@ -61,8 +61,7 @@ public class ServerThread extends Thread {
 					
 						String option3 = (String) inStream.readObject();
 						
-						new VerifyCommandD().verify(inStream, outStream)
-						
+						new VerifyCommandD().verify(inStream, outStream);
 						
 						if (option3.equals("-c")) {
 							
@@ -75,10 +74,11 @@ public class ServerThread extends Thread {
 						} else if (option3.equals("-e")) {
 							
 							new VerifyCommandE().verify(inStream, outStream);
-							
+
+						}
+					} else {
+						//false
 					}
-				} else {
-					//false
 				}
 			} else if (option1.equals("-au")) {
 				String username = (String) inStream.readObject();

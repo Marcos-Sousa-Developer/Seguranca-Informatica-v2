@@ -106,26 +106,34 @@ public class myCloud {
 		String[] address = verifyCommand(args);
 		
 		String username = args[3];
+		String userPassword = null;
 		
-		System.out.println(username);
+		System.out.println(args[2]);
+		
+		if(args[2].equals("-au")) {
+			userPassword = args[4];	
+		} 
+		if(args[2].equals("-u")) {
+			userPassword = args[5];
+		}
 		
 		Socket socket = null;
 		
 		try {
 			//-----------Substituir---------------
-			 //socket = new Socket(address[0], Integer.parseInt(address[1]));
+			 socket = new Socket(address[0], Integer.parseInt(address[1]));
 			 
 			//---------------TLS------------------
 			/*
 			 Criar keystores de cada cliente quando cria o cliente caso ainda não tenha sido criado e 
 			 depois envia para o servidor, caso não exista, depois de criar tem de extrair o certificado 
 			*/
-	
-		     System.setProperty("javax.net.ssl.keyStore", "KeyStore.si027Cloud"); //Colocar a keystore do cliente
-			 System.setProperty("javax.net.ssl.keyStorePassword", "123456"); //Mudar a password
+			/*
+		     System.setProperty("javax.net.ssl.trustStore", username + ".truststore"); 
+			 System.setProperty("javax.net.ssl.trustStorePassword", userPassword);
 		     SocketFactory sf = SSLSocketFactory.getDefault( );
-		     socket = sf.createSocket(address[0], Integer.parseInt(address[1]));
-		     
+		     socket = sf.createSocket(address[0], Integer.parseInt(address[1])); //ERRO AQUI
+		     */
 		    //------------------------------------
 		}
 		catch (ConnectException e) {
@@ -173,14 +181,13 @@ public class myCloud {
 						//se não tiver previamente o certificado do destinatário, pede ao servidor
 						//Se a maria enviar ficheiros para alice, os ficheiros devem de ficar com o nome "aa.pdf.assinado.maria"
 						List<String> filesDestUsername = new ArrayList<>(Arrays.asList(args)).subList(optionIndex, args.length);
-						new CommandD(address[0], Integer.parseInt(address[1]), args[3], filesDestUsername, destUsername, commandToDo).sendToServer(outStream, inStream);
+						//new CommandD(address[0], Integer.parseInt(address[1]), args[3], filesDestUsername, destUsername, commandToDo).sendToServer(outStream, inStream);
 					}	
 					
 					//Split and get the files to manage
 					List<String> files = new ArrayList<>(Arrays.asList(args)).subList(optionIndex + 1, args.length);
 					
 					System.out.println(files);
-					
 					
 					switch (args[optionIndex]) {
 					case "-c":

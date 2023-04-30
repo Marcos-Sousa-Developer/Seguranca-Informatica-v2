@@ -13,8 +13,6 @@ public class CommandD {
 	private static final String True = null;
 	private static final String False = null;
 	private List<String> filesDestUsername;
-	private String ip;
-	private int port;
 	//duvidas com o certificado
 	private String cert;
 	private String destUsername;
@@ -22,9 +20,7 @@ public class CommandD {
 	private String username;
 	private Long dimFileCif;
 	
-	public CommandD(String ip, int port, String username, List<String> filesDestUsername, String destUsername, String commandToDo) {
-		this.ip = ip;
-		this.port = port;
+	public CommandD(String username, List<String> filesDestUsername, String destUsername, String commandToDo) {
 		this.filesDestUsername = filesDestUsername;
 		this.cert = cert;
 		this.destUsername = destUsername;
@@ -190,8 +186,6 @@ public class CommandD {
 			}
 				
 				}
-			
-			
 		}
 	}	
 }
