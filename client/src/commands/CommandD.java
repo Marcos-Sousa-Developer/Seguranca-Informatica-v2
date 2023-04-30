@@ -16,7 +16,6 @@ public class CommandD {
 	private String ip;
 	private int port;
 	//duvidas com o certificado
-	private String cert;
 	private String destUsername;
 	private String commandToDo; 
 	private String username;
@@ -26,7 +25,6 @@ public class CommandD {
 		this.ip = ip;
 		this.port = port;
 		this.filesDestUsername = filesDestUsername;
-		this.cert = cert;
 		this.destUsername = destUsername;
 		this.commandToDo = commandToDo;
 		this.username = username;
@@ -34,6 +32,9 @@ public class CommandD {
 	
 //FALTA ENVIAR PARA A PASTA CORRETA DO UTILIZADOR
 	
+	public void verifyCert() {
+		
+	}
 	
 	public void sendToServer(ObjectOutputStream outStream, ObjectInputStream inStream) {
 		
@@ -61,11 +62,12 @@ public class CommandD {
 							
 							outStream.writeObject(this.filesDestUsername.size());
 							
-							CommandC cipherF = new CommandC(filesDestUsername);
-							CommandC.cipherFile(fileName);
 							
-							CommandC cipherK = new CommandC(filesDestUsername);
-							CommandC.cipherKey(fileName);
+							//CommandC cipherF = new CommandC(filesDestUsername);
+							//CommandC.cipherFile(fileName);
+							
+							//CommandC cipherK = new CommandC(filesDestUsername);
+							//CommandC.cipherKey(fileName);
 							
 							File fileCif = new File("../files/" + fileName + ".cifrado" + this.username);
 					        Long dimFileCif = fileCif.length();
