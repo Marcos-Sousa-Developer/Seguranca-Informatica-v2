@@ -14,6 +14,7 @@ import java.io.ObjectOutputStream;
 
 import commands.CommandAU;
 import commands.CommandC;
+//import commands.CommandD;
 import commands.CommandE;
 import commands.CommandG;
 import commands.CommandS;
@@ -152,7 +153,7 @@ public class myCloud {
 			    	System.exit(-1);
 				}
 				else {
-					System.err.println("User created.");
+					System.err.println("User " + "username" + " created.");
 			    	System.exit(0);
 				}
 				break;
@@ -173,7 +174,7 @@ public class myCloud {
 						//se não tiver previamente o certificado do destinatário, pede ao servidor
 						//Se a maria enviar ficheiros para alice, os ficheiros devem de ficar com o nome "aa.pdf.assinado.maria"
 						List<String> filesDestUsername = new ArrayList<>(Arrays.asList(args)).subList(optionIndex, args.length);
-						new CommandD(address[0], Integer.parseInt(address[1]), args[3], filesDestUsername, destUsername, commandToDo).sendToServer(outStream, inStream);
+						//new CommandD(address[0], Integer.parseInt(address[1]), args[3], filesDestUsername, destUsername, commandToDo).sendToServer(outStream, inStream);
 					}	
 					
 					//Split and get the files to manage
