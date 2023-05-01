@@ -132,7 +132,6 @@ public class CommandC {
 	public void sendToServer(ObjectOutputStream outStream, ObjectInputStream inStream) throws IOException, ClassNotFoundException, InvalidKeyException, NoSuchAlgorithmException, NoSuchPaddingException, UnrecoverableKeyException, KeyStoreException, CertificateException, IllegalBlockSizeException {
 		
 		outStream.writeObject("-c");
-		outStream.writeObject(this.username);
 		outStream.writeObject(this.files.size());
 		
 		for (String fileName : this.files) {

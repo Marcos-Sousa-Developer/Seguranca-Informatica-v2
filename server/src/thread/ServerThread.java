@@ -28,6 +28,7 @@ public class ServerThread extends Thread {
 			
 			String option1 = (String) inStream.readObject();
 			String username = (String) inStream.readObject();
+			String password = (String) inStream.readObject();
 			
 			if (option1.equals("-u")){
 
@@ -42,47 +43,31 @@ public class ServerThread extends Thread {
 					//true (vai buscar os outros comandos)
 					if (option2.equals("-c")) {
 						
-						new VerifyCommandC().verify(inStream, outStream);
+						new VerifyCommandC(username).verify(inStream, outStream);
 						
 					} else if (option2.equals("-s")) {
 						
-						new VerifyCommandS().verify(inStream, outStream);
+						new VerifyCommandS(username).verify(inStream, outStream);
 						
 					} else if (option2.equals("-e")) {
 						
-						new VerifyCommandE().verify(inStream, outStream);
+						new VerifyCommandE(username).verify(inStream, outStream);
 						
 					} else if (option2.equals("-g")) {
 						
-						new VerifyCommandG().verify(inStream, outStream);			
+						new VerifyCommandG(username).verify(inStream, outStream);			
 					
-					}else if (option2.equals("-d")) {
-					
-						String option3 = (String) inStream.readObject();
+					}else if (option2.equals("-d")) {  
 						
-						new VerifyCommandD().verify(inStream, outStream);
+						String destUsername = (String) inStream.readObject();
+						String commandToDo = (String) inStream.readObject();
 						
-						if (option3.equals("-c")) {
-							
-							new VerifyCommandC().verify(inStream, outStream);
-							
-						} else if (option3.equals("-s")) {
-								
-							new VerifyCommandS().verify(inStream, outStream);
-								
-						} else if (option3.equals("-e")) {
-								
-							new VerifyCommandE().verify(inStream, outStream);
-
-						}
-					} else {
-						//false
-					}
+						new VerifyCommandD(username, destUsername, commandToDo).verify(inStream, outStream);
+						
+					} 
 				}
 				
 			} else if (option1.equals("-au")) {
-				
-				String password = (String) inStream.readObject();
 
 				byte[] cert = inStream.readAllBytes();
 			

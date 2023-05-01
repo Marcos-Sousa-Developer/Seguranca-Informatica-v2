@@ -2,6 +2,7 @@ import java.net.ConnectException;
 import java.net.NoRouteToHostException;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.security.KeyStore;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.Certificate;
 import java.security.cert.CertificateFactory;
@@ -13,6 +14,7 @@ import java.util.List;
 import javax.net.SocketFactory;
 import javax.net.ssl.SSLSocketFactory;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.ObjectInputStream;
@@ -20,7 +22,7 @@ import java.io.ObjectOutputStream;
 
 import commands.CommandAU;
 import commands.CommandC;
-//import commands.CommandD;
+import commands.CommandD;
 import commands.CommandE;
 import commands.CommandG;
 import commands.CommandS;
@@ -120,7 +122,6 @@ public class myCloud {
 		if(!cert.split("[.]")[0].equals(username)) {
 			System.out.println("The certificate must be the same name as the username, ex. username.cer");
         	System.exit(-1);
-
 		}
 		
 		try {
@@ -146,6 +147,36 @@ public class myCloud {
 				
 	}
 	
+	public static void checkKeystore(String username, String password) {
+		
+		String path = "../keystore/" + username + ".keystore";
+		
+		if(!new File(path).exists()) {
+			System.out.println("Alert, you don't have a keystore!");
+			System.out.println("Check the folder keystore");
+			System.out.println("keystore must be your username, ex. username.keystore");
+        	System.exit(-1);
+		}
+		
+		try {
+            // Load the keystore
+            FileInputStream fis = new FileInputStream(path);
+            KeyStore keystore = KeyStore.getInstance(KeyStore.getDefaultType());
+            keystore.load(fis, password.toCharArray());
+            fis.close();
+            
+            if(!keystore.containsAlias(username)) {
+            	throw new Exception("Keystore should have same credentials of your account. alis=username and same account password!");
+            }
+
+        } catch (Exception e) {
+        	System.out.println("Alert, check the alias and password of your keystore!");
+        	System.out.println("Keystore should have same credentials of your account. alis=username and same account password!");
+            System.exit(-1);
+        }
+		
+	}
+	
 	/**
 	 * Manage type of request
 	 * @String[] list of arguments
@@ -159,24 +190,18 @@ public class myCloud {
 		
 		
 		if(args[2].equals("-au")) {
+			checkKeystore(username,password);
 			verifyCert(args[5],username);
 		}
-		
-		try {
-			
-			System.setProperty("javax.net.ssl.trustStore", "../keystore/"+username+".keystore");
-			System.setProperty("javax.net.ssl.trustStorePassword", password);
-			System.setProperty("javax.net.ssl.keyStoreType", "PKCS12");
-			
+		else {
+			password = args[5];
+			checkKeystore(username,args[5]);
 		}
-		
-		catch (Exception e) {
-			System.out.println("Error to connect");
-			System.out.println("Check if you have " + username +".keystore at keystore folder");
-			System.out.println("Password of your keystore should be the same as the user account");
-			System.exit(-1);
-		}
-	
+			
+		System.setProperty("javax.net.ssl.trustStore", "../keystore/"+username+".keystore");
+		System.setProperty("javax.net.ssl.trustStorePassword", password);
+		System.setProperty("javax.net.ssl.keyStoreType", "PKCS12");
+			
 		Socket socket = null; 
 		
 		
@@ -199,7 +224,7 @@ public class myCloud {
 		}
 		catch (Exception e) {
 			System.out.println("Error to connect");
-			System.out.println("Check if you have " + username +".keystore at keystore folder");
+			System.out.println("Check if you have " + username + ".keystore at keystore folder");
 			System.out.println("Password of your keystore should be the same as the user account");
 			System.exit(-1);
 		}
@@ -221,8 +246,8 @@ public class myCloud {
 				break;
 			case "-u":
 				
-				password = args[5];
-				
+				outStream.writeObject("-u");
+								
 				Boolean login = new CommandUP(username, password).verifyLogin(outStream, inStream);
 				
 				if(login) {
@@ -230,9 +255,7 @@ public class myCloud {
 					
 					//Split and get the files to manage
 					List<String> files = new ArrayList<>(Arrays.asList(args)).subList(7, args.length);
-					
-					//System.out.println(files);
-					
+										
 					switch (args[6]) {
 					
 						case "-c":
@@ -240,15 +263,16 @@ public class myCloud {
 							break;
 							
 						case "-s":
-							new CommandS(username,files).sendToServer(outStream, inStream);
+							new CommandS(username, password,files).sendToServer(outStream, inStream);
 							break;
 							
 						case "-e":
-							new CommandE(username,files).sendToServer(outStream, inStream);
+							new CommandE(username, password,files).sendToServer(outStream, inStream);
 							break;
 							
 						case "-g":
-							new CommandG(username,files).sendToServer(outStream, inStream);
+							new CommandG(username, password, files).sendToServer(outStream, inStream);
+							break;
 							
 						case "-d":
 							String destUsername = args[7];
@@ -256,7 +280,7 @@ public class myCloud {
 							List<String> filesDestUsername = null;
 							filesDestUsername = new ArrayList<>(Arrays.asList(args)).subList(9, args.length);
 						
-							//new CommandD(address[0], Integer.parseInt(address[1]), args[3], filesDestUsername, destUsername, commandToDo).sendToServer(outStream, inStream);
+							new CommandD(username, password, destUsername, commandToDo, filesDestUsername).sendToServer(outStream, inStream);
 
 							break;
 				}

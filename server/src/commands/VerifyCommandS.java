@@ -8,6 +8,13 @@ import java.io.ObjectOutputStream;
 
 public class VerifyCommandS {
 	
+	private String username; 
+	
+	public VerifyCommandS(String username) {
+		this.username = username;
+	}
+
+	
 	/**
 	 * Verify commandS and check what to do
 	 * @ObjectInputStream inStream
@@ -28,8 +35,8 @@ public class VerifyCommandS {
 				String fileName = (String) inStream.readObject();
 
 				// Check file exists on server
-				File fassinado = new File("../cloud/files/" + fileName + ".assinado");
-				File fseguro = new File("../cloud/files/" + fileName + ".seguro");
+				File fassinado = new File("../cloud/"+this.username+"/files/" + fileName + ".assinado");
+				File fseguro = new File("../cloud/"+this.username+"/files/" + fileName + ".seguro");
 				
 				Boolean fileExistServer = fassinado.exists() || fseguro.exists();
 
@@ -40,7 +47,7 @@ public class VerifyCommandS {
 					outStream.writeObject(false);
 
 					// Create new fileOutput ".assign"
-					FileOutputStream outFile = new FileOutputStream("../cloud/files/" + fileName + ".assinado");
+					FileOutputStream outFile = new FileOutputStream("../cloud/"+this.username+"/files/" + fileName + ".assinado");
 
 					// get the total buffer size for each file Math.min(totalbytesOfFile,1024)
 					int totalFileLength = (int) inStream.readObject();
@@ -61,9 +68,9 @@ public class VerifyCommandS {
 						contentLength = inStream.read(bufferData);
 					}
 					outFile.close();
-
+					
 					// Get Signature
-					FileOutputStream outSignature = new FileOutputStream("../cloud/signatures/" + fileName + ".assinatura");
+					FileOutputStream outSignature = new FileOutputStream("../cloud/"+this.username+"/signatures/" + fileName + ".assinatura");
 
 					// Get out put of signature
 					outSignature.write((byte[]) inStream.readObject());

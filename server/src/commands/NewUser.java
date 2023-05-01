@@ -32,6 +32,9 @@ public class NewUser {
 		}
 		write(username, password);
 		new File("../cloud/"+username).mkdirs();
+		new File("../cloud/"+username+"/files").mkdirs();
+		new File("../cloud/"+username+"/keys").mkdirs();
+		new File("../cloud/"+username+"/signatures").mkdirs();
 		return true;
 	}
 	

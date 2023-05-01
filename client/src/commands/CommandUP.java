@@ -20,7 +20,6 @@ public class CommandUP {
 	
 	public Boolean verifyLogin(ObjectOutputStream outStream, ObjectInputStream inStream) throws IOException, ClassNotFoundException {
 		
-		outStream.writeObject("-u");
 		outStream.writeObject(this.username);
 		outStream.writeObject(this.password);
 		

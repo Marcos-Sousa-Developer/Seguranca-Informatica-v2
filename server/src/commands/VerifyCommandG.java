@@ -7,6 +7,13 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
 public class VerifyCommandG {
+	
+	private String username; 
+	
+	public VerifyCommandG(String username) {
+		this.username = username;
+	}
+	
 	/**
 	 * Verify commandG and check what to do
 	 * @ObjectInputStream inStream
@@ -25,9 +32,9 @@ public class VerifyCommandG {
 				String fileName = (String) inStream.readObject(); 
 				
 				// Check file exists on server
-				File fcifrado = new File("../cloud/files/" + fileName + ".cifrado");
-				File fassinado = new File("../cloud/files/" + fileName + ".assinado");
-				File fseguro = new File("../cloud/files/" + fileName + ".seguro");
+				File fcifrado = new File("../cloud/"+this.username+"/files/" + fileName + ".cifrado");
+				File fassinado = new File("../cloud/"+this.username+"/files/" + fileName + ".assinado");
+				File fseguro = new File("../cloud/"+this.username+"/files/" + fileName + ".seguro");
 				
 				Boolean fileExistServer = fcifrado.exists() || fassinado.exists() || fseguro.exists();
 
@@ -36,19 +43,19 @@ public class VerifyCommandG {
 				if(fileExistServer) { 
 					
 					//case file is type ASSINADO
-					File fileToReadSign = new File("../cloud/files/" + fileName + ".assinado");
+					File fileToReadSign = new File("../cloud/"+this.username+"/files/" + fileName + ".assinado");
 					if(fileToReadSign.exists()){				
 						sendToClient(outStream, "-s", fileToReadSign, fileName);
 					}
 					else {
 						//case file is type CIFRADO
-						File fileToReadCif = new File("../cloud/files/" + fileName + ".cifrado");
+						File fileToReadCif = new File("../cloud/"+this.username+"/files/" + fileName + ".cifrado");
 						if(fileToReadCif.exists()){
 							sendToClient(outStream, "-c", fileToReadCif, fileName);
 						}
 						//case file is type SEGURO
 						else {
-							File fileToReadSecure = new File("../cloud/files/" + fileName + ".seguro");
+							File fileToReadSecure = new File("../cloud/"+this.username+"/files/" + fileName + ".seguro");
 							if(fileToReadSecure.exists()){ 
 								sendToClient(outStream, "-e", fileToReadSecure, fileName);
 								
@@ -74,25 +81,25 @@ public class VerifyCommandG {
 	private void sendToClient(ObjectOutputStream outStream, String option, File fileToRead, String fileName) throws IOException {
 		
 		outStream.writeObject(option); 
-						
+		
 		if(option.equals("-c")) {
-			FileInputStream fileInStreamSecretKey = new FileInputStream("../cloud/keys/" + fileName + ".chave_secreta"); 
+			FileInputStream fileInStreamSecretKey = new FileInputStream("../cloud/"+this.username+"/keys/" + fileName + ".chave_secreta"); 
 			outStream.write(fileInStreamSecretKey.readAllBytes());
 			fileInStreamSecretKey.close();
 		} 
 		
 		else if (option.equals("-s")) {
-			FileInputStream fileInStreamSignature = new FileInputStream("../cloud/signatures/" + fileName + ".assinatura"); 
+			FileInputStream fileInStreamSignature = new FileInputStream("../cloud/"+this.username+"/signatures/" + fileName + ".assinatura"); 
 			outStream.write(fileInStreamSignature.readAllBytes()); 
 			fileInStreamSignature.close();
 		}
 		
 		else {
-			FileInputStream fileInStreamSecretKey = new FileInputStream("../cloud/keys/" + fileName + ".chave_secreta"); 
+			FileInputStream fileInStreamSecretKey = new FileInputStream("../cloud/"+this.username+"/keys/" + fileName + ".chave_secreta"); 
 			outStream.write(fileInStreamSecretKey.readAllBytes());
 			fileInStreamSecretKey.close();
 			
-			FileInputStream fileInStreamSignature = new FileInputStream("../cloud/signatures/" + fileName + ".assinatura"); 
+			FileInputStream fileInStreamSignature = new FileInputStream("../cloud/"+this.username+"/signatures/" + fileName + ".assinatura"); 
 			outStream.write(fileInStreamSignature.readAllBytes()); 
 			fileInStreamSignature.close();
 		}

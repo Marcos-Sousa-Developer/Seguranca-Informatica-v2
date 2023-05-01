@@ -7,7 +7,13 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
-public class VerifyCommandC {
+public class VerifyCommandC { 
+	
+	private String username; 
+	
+	public VerifyCommandC(String username) {
+		this.username = username;
+	}
 	
 	/**
 	 * Verify commandC and check what to do
@@ -26,8 +32,8 @@ public class VerifyCommandC {
 			if (fileExistClient) {
 				String fileName = (String) inStream.readObject();
 
-				File fcifrado = new File("../cloud/files/" + fileName + ".cifrado");
-				File fseguro = new File("../cloud/files/" + fileName + ".seguro");
+				File fcifrado = new File("../cloud/"+this.username+"/files/"+ fileName + ".cifrado");
+				File fseguro = new File("../cloud/"+this.username+"/files/" + fileName + ".seguro");
 
 				//check if file does not exists on the server
 				Boolean fileExistServer = fcifrado.exists() || fseguro.exists();
@@ -42,7 +48,7 @@ public class VerifyCommandC {
 
 					String fileNameCif = (String) inStream.readObject();
 
-					FileOutputStream outFileStreamCif = new FileOutputStream("../cloud/files/" + fileNameCif);
+					FileOutputStream outFileStreamCif = new FileOutputStream("../cloud/"+this.username+"/files/" + fileNameCif);
 					BufferedOutputStream outFileCif = new BufferedOutputStream(outFileStreamCif);
 
 					try {
@@ -73,7 +79,7 @@ public class VerifyCommandC {
 
 					String fileNameKey = (String) inStream.readObject();
 
-					FileOutputStream outFileStreamKey = new FileOutputStream("../cloud/keys/" + fileNameKey);
+					FileOutputStream outFileStreamKey = new FileOutputStream("../cloud/"+this.username+"/keys/" + fileNameKey);
 
 					BufferedOutputStream outFileKey = new BufferedOutputStream(outFileStreamKey);
 

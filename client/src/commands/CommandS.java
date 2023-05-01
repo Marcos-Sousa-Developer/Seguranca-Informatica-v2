@@ -25,11 +25,14 @@ import java.io.File;
 
 public class CommandS {
 	
-	private List<String> files;
 	private String username;
+	private String password;
+	private List<String> files;
+
 	
-	public CommandS(String username, List<String> files) { 
+	public CommandS(String username, String password, List<String> files) { 
 		this.username = username;
+		this.password = password;		
 		this.files = files;
 	}
 	
@@ -43,19 +46,16 @@ public class CommandS {
 		Signature signature = Signature.getInstance("SHA256withRSA");   
 
 		//Read the KeyStore File
-		FileInputStream keyStorefile = new FileInputStream(new File("../"+this.username+".keystore")); 
-		
-		//Alias from set up in KeyStore file
-		String alias = "si027";
+		FileInputStream keyStorefile = new FileInputStream(new File("../keystore/" +this.username + ".keystore")); 
 		
 		//Get the instance of keyStore
 		KeyStore kstore = KeyStore.getInstance("PKCS12"); 
 		
 		//verify password and load KeyStore file
-		kstore.load(keyStorefile, "si027marcos&rafael".toCharArray()); 
+		kstore.load(keyStorefile, this.password.toCharArray()); 
 		
 		//Get the private key 
-		Key key = kstore.getKey(alias, "si027marcos&rafael".toCharArray()); 
+		Key key = kstore.getKey(this.username, this.password.toCharArray()); 
 		
 		//turn key in instance of private key
 		PrivateKey privatekey = (PrivateKey) key; 

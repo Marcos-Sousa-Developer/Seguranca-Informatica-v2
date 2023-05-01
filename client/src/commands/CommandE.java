@@ -31,9 +31,13 @@ import javax.crypto.spec.SecretKeySpec;
 
 public class CommandE {
 
+	private String username;
+	private String password;
 	private List<String> files;
 
-	public CommandE(List<String> files) {
+	public CommandE(String username, String password, List<String> files) {
+		this.username = username;
+		this.password = password;
 		this.files = files;
 	}
 	
@@ -47,16 +51,16 @@ public class CommandE {
 		Signature signature = Signature.getInstance("SHA256withRSA");   
 		
 		//Read the KeyStore File
-		FileInputStream keyStorefile = new FileInputStream(new File("../src/KeyStore.si027Cloud")); 
+		FileInputStream keyStorefile = new FileInputStream(new File("../keystore/" +this.username + ".keystore")); 
 		
 		//Get the instance of keyStore
 		KeyStore kstore = KeyStore.getInstance("PKCS12"); 
 		
 		//verify password and load KeyStore file
-		kstore.load(keyStorefile, "si027marcos&rafael".toCharArray()); 
+		kstore.load(keyStorefile, this.password.toCharArray()); 
 		
 		//Get the private key 
-		Key key = kstore.getKey("si027", "si027marcos&rafael".toCharArray()); 
+		Key key = kstore.getKey(this.username, this.password.toCharArray()); 
 		
 		//turn key in instance of private key
 		PrivateKey privatekey = (PrivateKey) key; 
@@ -117,15 +121,15 @@ public class CommandE {
 	 */
 	private void cipherKey(String fileName) throws KeyStoreException, NoSuchAlgorithmException, CertificateException, IOException, UnrecoverableKeyException, NoSuchPaddingException, InvalidKeyException, IllegalBlockSizeException {
 		
-    	FileInputStream kfile = new FileInputStream("KeyStore.si027Cloud");
+    	FileInputStream kfile = new FileInputStream("../keystore/" +this.username + ".keystore");
     	
     	KeyStore keystore = KeyStore.getInstance("PKCS12");
     	
-    	keystore.load(kfile, "si027marcos&rafael".toCharArray());
+    	keystore.load(kfile, this.password.toCharArray());
     	
     	//Key key = keystore.getKey("si027", "si027marcos&rafael".toCharArray());  
     	
-    	Certificate cert = keystore.getCertificate("si027");
+    	Certificate cert = keystore.getCertificate(this.username);
     	
     	PublicKey pubkey = cert.getPublicKey();
     	
@@ -158,6 +162,7 @@ public class CommandE {
     	
     	
 	}
+	
 	
 	/**
 	 * Method to communicate with the server

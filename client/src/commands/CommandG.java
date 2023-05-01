@@ -29,9 +29,13 @@ import javax.crypto.NoSuchPaddingException;
 
 public class CommandG {
 	
+	private String username;
+	private String password;
 	private List<String> files;
 
-	public CommandG(List<String> files) {
+	public CommandG(String username, String password, List<String> files) {
+		this.username = username;
+		this.password = password;
 		this.files = files;
 	}
 	
@@ -44,12 +48,12 @@ public class CommandG {
 		
 		Signature s = Signature.getInstance("SHA256withRSA");
 		
-		FileInputStream kfile = new FileInputStream(new File("../src/KeyStore.si027Cloud"));
+		FileInputStream kfile = new FileInputStream(new File("../keystore/" +this.username + ".keystore"));
 		KeyStore keystore = KeyStore.getInstance("PKCS12");
-		keystore.load(kfile, "si027marcos&rafael".toCharArray()); 
+		keystore.load(kfile, this.password.toCharArray()); 
 		//Key key = keystore.getKey("si027", "si027marcos&rafael".toCharArray());  
 
-		Certificate cert = keystore.getCertificate("si027");
+		Certificate cert = keystore.getCertificate(this.username);
 		
 		PublicKey publicKey = cert.getPublicKey(); 	
 		
@@ -89,11 +93,11 @@ public class CommandG {
 	 */
 	private Cipher initDecryptMode(byte[] AESkey) throws KeyStoreException, NoSuchAlgorithmException, CertificateException, IOException, UnrecoverableKeyException, InvalidKeyException, NoSuchPaddingException, IllegalBlockSizeException, BadPaddingException {
 		
-		FileInputStream kfile = new FileInputStream("KeyStore.si027Cloud"); 
+		FileInputStream kfile = new FileInputStream("../keystore/" + this.username + ".keystore"); 
 	    KeyStore kstore = KeyStore.getInstance("PKCS12");
-	    kstore.load(kfile, "si027marcos&rafael".toCharArray());
+	    kstore.load(kfile, this.password.toCharArray());
 	    
-	    Key privateKey = kstore.getKey("si027", "si027marcos&rafael".toCharArray());
+	    Key privateKey = kstore.getKey(this.username, this.password.toCharArray());
 		
 	    Cipher cRSA = Cipher.getInstance("RSA");
 	    

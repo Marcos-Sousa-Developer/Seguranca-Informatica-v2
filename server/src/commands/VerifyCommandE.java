@@ -7,6 +7,13 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
 public class VerifyCommandE {
+	
+	private String username; 
+	
+	public VerifyCommandE(String username) {
+		this.username = username;
+	}
+
 
 	/**
 	 * Verify commandE and check what to do
@@ -25,9 +32,9 @@ public class VerifyCommandE {
 				String fileName = (String) inStream.readObject();
 				
 				// Check file exists on server
-				File fcifrado = new File("../cloud/files/" + fileName + ".cifrado");
-				File fassinado = new File("../cloud/files/" + fileName + ".assinado");
-				File fseguro = new File("../cloud/files/" + fileName + ".seguro");
+				File fcifrado = new File("../cloud/"+this.username+"/files/" + fileName + ".cifrado");
+				File fassinado = new File("../cloud/"+this.username+"/files/" + fileName + ".assinado");
+				File fseguro = new File("../cloud/"+this.username+"/files/" + fileName + ".seguro");
 				
 				Boolean fileExistServer = fcifrado.exists() || fassinado.exists() || fseguro.exists();
 
@@ -35,10 +42,10 @@ public class VerifyCommandE {
 
 				if (!fileExistServer) {
 		
-					FileOutputStream out = new FileOutputStream("../cloud/files/" + fileName + ".seguro");
+					FileOutputStream out = new FileOutputStream("../cloud/"+this.username+"/files/" + fileName + ".seguro");
 					
 					//save the signature of the file
-					FileOutputStream outSignature = new FileOutputStream("../cloud/signatures/" + fileName + ".assinatura"); 
+					FileOutputStream outSignature = new FileOutputStream("../cloud/"+this.username+"/signatures/" + fileName + ".assinatura"); 
 					
 					outSignature.write((byte[]) inStream.readObject()); 
 					
@@ -75,7 +82,7 @@ public class VerifyCommandE {
 					out.close(); 
 					
 					//Save the cipher secret key
-					FileOutputStream outKey = new FileOutputStream("../cloud/keys/" + fileName + ".chave_secreta"); 
+					FileOutputStream outKey = new FileOutputStream("../cloud/"+this.username+"/keys/" + fileName + ".chave_secreta"); 
 					
 					outKey.write((byte[]) inStream.readObject()); 
 					
