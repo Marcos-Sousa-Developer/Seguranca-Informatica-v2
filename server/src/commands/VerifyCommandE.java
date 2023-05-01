@@ -9,11 +9,16 @@ import java.io.ObjectOutputStream;
 public class VerifyCommandE {
 	
 	private String username; 
+	private String from = null;
 	
 	public VerifyCommandE(String username) {
 		this.username = username;
 	}
-
+	
+	public VerifyCommandE(String username, String from) {
+		this.username = username;
+		this.from = from;
+	}
 
 	/**
 	 * Verify commandE and check what to do
@@ -21,6 +26,8 @@ public class VerifyCommandE {
 	 * @ObjectOutputStream outStream
 	 */
 	public void verify(ObjectInputStream inStream, ObjectOutputStream outStream) throws ClassNotFoundException, IOException {
+		
+		String type = from.equals(null) ? "" : this.from;
 		
 		int numFiles = (int) inStream.readObject(); 
 		
@@ -32,9 +39,9 @@ public class VerifyCommandE {
 				String fileName = (String) inStream.readObject();
 				
 				// Check file exists on server
-				File fcifrado = new File("../cloud/"+this.username+"/files/" + fileName + ".cifrado");
-				File fassinado = new File("../cloud/"+this.username+"/files/" + fileName + ".assinado");
-				File fseguro = new File("../cloud/"+this.username+"/files/" + fileName + ".seguro");
+				File fcifrado = new File("../cloud/"+this.username+"/files/" + fileName + ".cifrado" + type);
+				File fassinado = new File("../cloud/"+this.username+"/files/" + fileName + ".assinado" + type);
+				File fseguro = new File("../cloud/"+this.username+"/files/" + fileName + ".seguro" + type);
 				
 				Boolean fileExistServer = fcifrado.exists() || fassinado.exists() || fseguro.exists();
 
@@ -42,10 +49,10 @@ public class VerifyCommandE {
 
 				if (!fileExistServer) {
 		
-					FileOutputStream out = new FileOutputStream("../cloud/"+this.username+"/files/" + fileName + ".seguro");
+					FileOutputStream out = new FileOutputStream("../cloud/"+this.username+"/files/" + fileName + ".seguro" + type);
 					
 					//save the signature of the file
-					FileOutputStream outSignature = new FileOutputStream("../cloud/"+this.username+"/signatures/" + fileName + ".assinatura"); 
+					FileOutputStream outSignature = new FileOutputStream("../cloud/"+this.username+"/signatures/" + fileName + ".assinatura" + type); 
 					
 					outSignature.write((byte[]) inStream.readObject()); 
 					
@@ -82,7 +89,7 @@ public class VerifyCommandE {
 					out.close(); 
 					
 					//Save the cipher secret key
-					FileOutputStream outKey = new FileOutputStream("../cloud/"+this.username+"/keys/" + fileName + ".chave_secreta"); 
+					FileOutputStream outKey = new FileOutputStream("../cloud/"+this.username+"/keys/" + fileName + ".chave_secreta" + type); 
 					
 					outKey.write((byte[]) inStream.readObject()); 
 					

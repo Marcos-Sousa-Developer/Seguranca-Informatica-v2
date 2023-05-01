@@ -166,6 +166,7 @@ public class CommandDE {
     	
 	}
 	
+	
 	/**
 	 * Method to communicate with the server
 	 */

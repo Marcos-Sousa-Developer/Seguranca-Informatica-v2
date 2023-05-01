@@ -46,7 +46,7 @@ public class VerifyCommandD {
 				outStream.writeObject(destUserCert.readAllBytes());
 				
 				if(this.commandToDo.equals("-e")) {
-					new VerifyCommandE(this.destUsername);
+					new VerifyCommandE(this.destUsername,this.username);
 				}
 				
 			}
@@ -55,7 +55,7 @@ public class VerifyCommandD {
 		else {
 			
 			if(this.commandToDo.equals("-e")) {
-				new VerifyCommandE(this.destUsername);
+				new VerifyCommandE(this.destUsername,this.username);
 			}
 			
 		}
