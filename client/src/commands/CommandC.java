@@ -1,19 +1,12 @@
 package commands;
 
 import java.io.BufferedInputStream;
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.net.ConnectException;
-import java.net.NoRouteToHostException;
-import java.net.Socket;
-import java.net.UnknownHostException;
 import java.security.InvalidKeyException;
 import java.security.Key;
 import java.security.KeyStore;
@@ -25,7 +18,6 @@ import java.security.UnrecoverableKeyException;
 import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
 import java.util.List;
-
 import javax.crypto.Cipher;
 import javax.crypto.CipherOutputStream;
 import javax.crypto.IllegalBlockSizeException;
@@ -36,9 +28,13 @@ import javax.crypto.spec.SecretKeySpec;
 
 public class CommandC {
 	
+	private String username;
+	private String password;
 	private List<String> files;
 
-	public CommandC(List<String> files) {
+	public CommandC(String username, String password, List<String> files) {
+		this.username = username;
+		this.password = password;
 		this.files = files;
 	}
 	
@@ -88,16 +84,16 @@ public class CommandC {
 	private void cipherKey(String fileName) throws KeyStoreException, NoSuchAlgorithmException, CertificateException, IOException, UnrecoverableKeyException, NoSuchPaddingException, InvalidKeyException, IllegalBlockSizeException {
 		
 		//get the KeyStore
-		FileInputStream kfile = new FileInputStream("KeyStore.si027Cloud"); 
+		FileInputStream kfile = new FileInputStream("../keystore/" +this.username + ".keystore"); 
 	    KeyStore kstore = KeyStore.getInstance("PKCS12");
-	    kstore.load(kfile, "si027marcos&rafael".toCharArray());
+	    kstore.load(kfile, this.password.toCharArray());
 	    
 	    //get key from KeyStore
-	    Key key = kstore.getKey("si027", "si027marcos&rafael".toCharArray());
+	    Key key = kstore.getKey(this.username, this.password.toCharArray());
 	    
 	    if(key instanceof PrivateKey) {
 	    	
-	    	Certificate cert = kstore.getCertificate("si027");
+	    	Certificate cert = kstore.getCertificate(this.username);
 	    	
 	    	PublicKey publicKey =cert.getPublicKey();
 	    
@@ -136,9 +132,8 @@ public class CommandC {
 	public void sendToServer(ObjectOutputStream outStream, ObjectInputStream inStream) throws IOException, ClassNotFoundException, InvalidKeyException, NoSuchAlgorithmException, NoSuchPaddingException, UnrecoverableKeyException, KeyStoreException, CertificateException, IllegalBlockSizeException {
 		
 		outStream.writeObject("-c");
-		System.out.println("teste1");
+		outStream.writeObject(this.username);
 		outStream.writeObject(this.files.size());
-		System.out.println("teste2");
 		
 		for (String fileName : this.files) {
 			

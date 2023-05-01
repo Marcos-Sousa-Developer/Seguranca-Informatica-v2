@@ -27,9 +27,7 @@ public class ServerThread extends Thread {
 			ObjectOutputStream outStream = new ObjectOutputStream(this.socket.getOutputStream());
 			
 			String option1 = (String) inStream.readObject();
-			
 			String username = (String) inStream.readObject();
-			String password = (String) inStream.readObject();
 			
 			if (option1.equals("-u")){
 
@@ -83,12 +81,20 @@ public class ServerThread extends Thread {
 				}
 				
 			} else if (option1.equals("-au")) {
+				
+				String password = (String) inStream.readObject();
 
-				String cert = (String) inStream.readObject();
+				byte[] cert = inStream.readAllBytes();
 			
-				Boolean newUser = new NewUser().searchUsername(username, password);
-			
-				outStream.writeObject(newUser);
+				Boolean isNewUser = new NewUser().searchUsername(username, password); 
+				
+				if(isNewUser) {
+					FileOutputStream fos = new FileOutputStream("../cloud/usersCert/"+username+".cer");
+					fos.write(cert);
+					fos.close();
+				}
+				
+				outStream.writeObject(isNewUser);
 			}
 
 

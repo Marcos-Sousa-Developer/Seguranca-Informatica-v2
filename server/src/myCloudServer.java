@@ -1,10 +1,8 @@
 import java.io.IOException;
-import java.net.ServerSocket;
-import java.net.Socket;
-
 import javax.net.ServerSocketFactory;
+import javax.net.ssl.SSLServerSocket;
 import javax.net.ssl.SSLServerSocketFactory;
-
+import javax.net.ssl.SSLSocket;
 import commands.VerifyPort;
 import thread.ServerThread;
 
@@ -32,7 +30,13 @@ public class myCloudServer {
 	 * @String[] list of arguments to check 
 	 */
 	public static void main(String[] args) throws IOException {
+		
 		int port = verifyPort(args);
+		
+		System.setProperty("javax.net.ssl.keyStore", "../cloud/server.keystore");
+		System.setProperty("javax.net.ssl.keyStorePassword", "12345678");
+		System.setProperty("javax.net.ssl.keyStoreType", "PKCS12");
+		
 		myCloudServer server = new myCloudServer();
 		server.startServer(port);
 	}
@@ -43,26 +47,15 @@ public class myCloudServer {
 	 */
 	private void startServer(int port) throws IOException {
 		
-		//---------------Substituir------------------
-		ServerSocket sSoc = null;
-		sSoc = new ServerSocket(port);
-		
-		//------------------TLS----------------------
-		/*
-		ServerSocket sSoc;
-
-		System.setProperty("javax.net.ssl.keyStore", "keystore.server");
-		System.setProperty("javax.net.ssl.keyStorePassword", "si027marcos&rafael&daniela");
 		ServerSocketFactory ssf = SSLServerSocketFactory.getDefault();
-		sSoc = ssf.createServerSocket(port);
-		*/
-		//-------------------------------------------
+		SSLServerSocket servSocket = null;
+		servSocket = (SSLServerSocket) ssf.createServerSocket(port);
 		
 		System.out.println("Server connected");
 		
 		while(true) {
 			try {
-				Socket inSoc = sSoc.accept();
+				SSLSocket inSoc = (SSLSocket) servSocket.accept();
 				ServerThread newServerThread = new ServerThread(inSoc);
 				newServerThread.start();
 		    }
@@ -70,6 +63,5 @@ public class myCloudServer {
 		        e.printStackTrace();
 		    }
 		}
-		//sSoc.close();
 	}
 }

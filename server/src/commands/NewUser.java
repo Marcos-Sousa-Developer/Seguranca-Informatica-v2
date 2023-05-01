@@ -51,14 +51,12 @@ public class NewUser {
 	}
 	
 	public void write(String username, String password) throws NoSuchAlgorithmException, IOException {
-		System.out.println("changed1");
-		String file = "../cloud/passwords.txt";
 		
+		String file = "../cloud/passwords.txt";
 		String salt = saltPassword();
 		String passWithSalt = salt + password;
 		String hashOfPassWithSalt = getHashPassWithSalt(passWithSalt);
 
-		//Adição do user e da password ao ficheiro caso tudo esteja correto
 		FileWriter fw = new FileWriter(file, true);
 		
 		BufferedWriter bw = new BufferedWriter(fw);

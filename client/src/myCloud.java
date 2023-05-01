@@ -2,6 +2,10 @@ import java.net.ConnectException;
 import java.net.NoRouteToHostException;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.security.NoSuchAlgorithmException;
+import java.security.cert.Certificate;
+import java.security.cert.CertificateFactory;
+import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -9,20 +13,14 @@ import java.util.List;
 import javax.net.SocketFactory;
 import javax.net.ssl.SSLSocketFactory;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
 import commands.CommandAU;
 import commands.CommandC;
-<<<<<<< HEAD
-<<<<<<< HEAD
-import commands.CommandD;
-=======
 //import commands.CommandD;
->>>>>>> 2e1e7016b13e63fd58cd3af3dcd533e2b6e12d31
-=======
-//import commands.CommandD;
->>>>>>> 2e1e7016b13e63fd58cd3af3dcd533e2b6e12d31
 import commands.CommandE;
 import commands.CommandG;
 import commands.CommandS;
@@ -107,43 +105,85 @@ public class myCloud {
 	}
 
 	/**
+	 * @param certificate
+	 * @param username
+	 * @description check if certificate is valid
+	 */
+	public static void verifyCert(String cert, String username) {  
+				
+		if(cert.split("[.]").length != 2) {
+			System.out.println("ok");
+			System.out.println("Certificate " + cert + " is not valid.");
+        	System.exit(-1);
+		}
+		
+		if(!cert.split("[.]")[0].equals(username)) {
+			System.out.println("The certificate must be the same name as the username, ex. username.cer");
+        	System.exit(-1);
+
+		}
+		
+		try {
+            // Load the certificate from the file
+            FileInputStream certToVerify = new FileInputStream("../keystore/"+cert);
+            CertificateFactory cf = CertificateFactory.getInstance("X.509");
+            Certificate cer = cf.generateCertificate(certToVerify);
+            certToVerify.close();
+
+            // Verify the certificate
+            X509Certificate x509cert = (X509Certificate) cer;
+            x509cert.checkValidity();
+            
+        } catch (FileNotFoundException e) { 
+        	System.out.println("Certificate not found");
+        	System.exit(-1);
+        }
+		
+		catch (Exception e) {
+			System.out.println("Certificate is not valid");
+			System.exit(-1);
+		}
+				
+	}
+	
+	/**
 	 * Manage type of request
 	 * @String[] list of arguments
 	 */
 	public static void main(String[] args) throws Exception {
+				
+		String[] address = verifyCommand(args); 
 		
-		String[] address = verifyCommand(args);
+		String username = args[3]; 	
+		String password = args[4];
 		
-		String username = args[3];
-		String userPassword = null;
-		
-		System.out.println(args[2]);
 		
 		if(args[2].equals("-au")) {
-			userPassword = args[4];	
-		} 
-		if(args[2].equals("-u")) {
-			userPassword = args[5];
+			verifyCert(args[5],username);
 		}
 		
-		Socket socket = null;
+		try {
+			
+			System.setProperty("javax.net.ssl.trustStore", "../keystore/"+username+".keystore");
+			System.setProperty("javax.net.ssl.trustStorePassword", password);
+			System.setProperty("javax.net.ssl.keyStoreType", "PKCS12");
+			
+		}
+		
+		catch (Exception e) {
+			System.out.println("Error to connect");
+			System.out.println("Check if you have " + username +".keystore at keystore folder");
+			System.out.println("Password of your keystore should be the same as the user account");
+			System.exit(-1);
+		}
+	
+		Socket socket = null; 
+		
 		
 		try {
-			//-----------Substituir---------------
-			 socket = new Socket(address[0], Integer.parseInt(address[1]));
-			 
-			//---------------TLS------------------
-			/*
-			 Criar keystores de cada cliente quando cria o cliente caso ainda não tenha sido criado e 
-			 depois envia para o servidor, caso não exista, depois de criar tem de extrair o certificado 
-			*/
-			/*
-		     System.setProperty("javax.net.ssl.trustStore", username + ".truststore"); 
-			 System.setProperty("javax.net.ssl.trustStorePassword", userPassword);
-		     SocketFactory sf = SSLSocketFactory.getDefault( );
-		     socket = sf.createSocket(address[0], Integer.parseInt(address[1])); //ERRO AQUI
-		     */
-		    //------------------------------------
+			SocketFactory sf = SSLSocketFactory.getDefault();
+			socket = sf.createSocket(address[0], Integer.parseInt(address[1]));
+			
 		}
 		catch (ConnectException e) {
 			System.out.println("Connection refused, please check the Port");
@@ -157,13 +197,19 @@ public class myCloud {
 			System.out.println("Connection refused, please check the Host");
 			System.exit(-1);
 		}
+		catch (Exception e) {
+			System.out.println("Error to connect");
+			System.out.println("Check if you have " + username +".keystore at keystore folder");
+			System.out.println("Password of your keystore should be the same as the user account");
+			System.exit(-1);
+		}
 		
 		ObjectOutputStream outStream = new ObjectOutputStream(socket.getOutputStream());
 		ObjectInputStream inStream = new ObjectInputStream(socket.getInputStream());
 		
 		switch (args[2]) {
 			case "-au":
-				Boolean iscreated = new CommandAU(args[3], args[4], args[5]).createUser(outStream, inStream);
+				Boolean iscreated = new CommandAU(username, password, new FileInputStream("../keystore/"+args[5])).createUser(outStream, inStream);
 				if(!iscreated) {
 					System.err.println("This username already exists.");
 			    	System.exit(-1);
@@ -174,12 +220,13 @@ public class myCloud {
 				}
 				break;
 			case "-u":
-				Boolean login = new CommandUP(args[3], args[5]).verifyLogin(outStream, inStream);
+				
+				password = args[5];
+				
+				Boolean login = new CommandUP(username, password).verifyLogin(outStream, inStream);
 				
 				if(login) {
 					System.out.println("Authorized");
-					
-					
 					
 					//Split and get the files to manage
 					List<String> files = new ArrayList<>(Arrays.asList(args)).subList(7, args.length);
@@ -188,31 +235,30 @@ public class myCloud {
 					
 					switch (args[6]) {
 					
- 
-					case "-c":
-						new CommandC(files).sendToServer(outStream, inStream);
-
-						break;
-					case "-s":
-						new CommandS(files).sendToServer(outStream, inStream);
-
-						break;
-					case "-e":
-						new CommandE(files).sendToServer(outStream, inStream);
-
-						break;
-					case "-g":
-						new CommandG(files).sendToServer(outStream, inStream);
-					case "-d":
-						String destUsername = args[7];
-						String commandToDo = args[8];
-						List<String> filesDestUsername = null;
-						filesDestUsername = new ArrayList<>(Arrays.asList(args)).subList(9, args.length);
+						case "-c":
+							new CommandC(username, password, files).sendToServer(outStream, inStream);
+							break;
+							
+						case "-s":
+							new CommandS(username,files).sendToServer(outStream, inStream);
+							break;
+							
+						case "-e":
+							new CommandE(username,files).sendToServer(outStream, inStream);
+							break;
+							
+						case "-g":
+							new CommandG(username,files).sendToServer(outStream, inStream);
+							
+						case "-d":
+							String destUsername = args[7];
+							String commandToDo = args[8];
+							List<String> filesDestUsername = null;
+							filesDestUsername = new ArrayList<>(Arrays.asList(args)).subList(9, args.length);
 						
-						new CommandD(address[0], Integer.parseInt(address[1]), args[3], filesDestUsername, destUsername, commandToDo).sendToServer(outStream, inStream);
+							//new CommandD(address[0], Integer.parseInt(address[1]), args[3], filesDestUsername, destUsername, commandToDo).sendToServer(outStream, inStream);
 
-
-						break;
+							break;
 				}
 				} else {
 					System.err.println("Not authorized");

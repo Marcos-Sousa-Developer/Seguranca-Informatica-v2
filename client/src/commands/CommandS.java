@@ -26,8 +26,10 @@ import java.io.File;
 public class CommandS {
 	
 	private List<String> files;
+	private String username;
 	
-	public CommandS(List<String> files) { 
+	public CommandS(String username, List<String> files) { 
+		this.username = username;
 		this.files = files;
 	}
 	
@@ -39,10 +41,9 @@ public class CommandS {
 		
 		//Set the signature
 		Signature signature = Signature.getInstance("SHA256withRSA");   
-		
 
 		//Read the KeyStore File
-		FileInputStream keyStorefile = new FileInputStream(new File("../src/KeyStore.si027Cloud")); 
+		FileInputStream keyStorefile = new FileInputStream(new File("../"+this.username+".keystore")); 
 		
 		//Alias from set up in KeyStore file
 		String alias = "si027";

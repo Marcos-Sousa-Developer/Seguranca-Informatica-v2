@@ -39,6 +39,7 @@ public class CommandD {
 			File f = new File("../files/" + fileName);
 			Boolean fileExistClient = f.exists();
 			
+			/*
 			
 			if(fileExistClient) {
 				
@@ -99,8 +100,8 @@ public class CommandD {
 							
 							outStream.writeObject(this.filesDestUsername.size());
 							
-							CommandS sign = new CommandS(filesDestUsername);
-							CommandS.initSignature();
+							//CommandS sign = new CommandS(filesDestUsername);
+							//CommandS.initSignature();
 							
 							FileInputStream fileInStream = new FileInputStream("../files/" + fileName); 
 
@@ -114,13 +115,13 @@ public class CommandD {
 							
 							while(contentLength > 0 ) {
 								//Hash the data
-								Signature signature.update(dataToBytes,0,contentLength);
+								//Signature signature.update(dataToBytes,0,contentLength);
 								//send data to server
 								outStream.write(dataToBytes,0,contentLength);
 								//continue to read fileInStream
 								contentLength = fileInStream.read(dataToBytes);
 								
-								outStream.writeObject(signature.sign());
+								//outStream.writeObject(signature.sign());
 								fileInStream.close();
 								
 								 System.out.println("The file " + fileName + " have been sent correctly.");
@@ -133,14 +134,14 @@ public class CommandD {
 							outStream.writeObject(this.filesDestUsername.size());
 							
 							CommandE cifFile = new CommandE(filesDestUsername);
-							CommandE.cipherFile(fileName,outStream); 
+							//CommandE.cipherFile(fileName,outStream); 
 							//cipher key
 							CommandE cifKey = new CommandE(filesDestUsername);
-							CommandE.cipherKey(fileName); 
+							//CommandE.cipherKey(fileName); 
 							
 							File secureFile = new File("../files/" + fileName + ".seguro" + this.username);
 
-							FileInputStream fileInStream = new FileInputStream("../files/" + fileName + ".seguro" + this.username);
+							//FileInputStream fileInStream = new FileInputStream("../files/" + fileName + ".seguro" + this.username);
 
 							int totalFileLengthE = fileInStream.available();
 
@@ -187,7 +188,7 @@ public class CommandD {
 				System.err.println("The file " + fileName + " doesn't exist. You must provide a existing file.");		
 			}
 				
-				}
+				} */
 		}
 	}	
 }
