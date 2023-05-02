@@ -88,7 +88,7 @@ public class CommandDC {
 	 */
 	private void cipherKey(String fileName) throws KeyStoreException, NoSuchAlgorithmException, CertificateException, IOException, UnrecoverableKeyException, NoSuchPaddingException, InvalidKeyException, IllegalBlockSizeException {
 		
-		String path = "../truststore/"+this.destUsername+".cer"; 
+		String path = "../keystore/"+this.destUsername+".cer"; 
 		
     	FileInputStream certToVerify = new FileInputStream(path);
     	
@@ -149,13 +149,6 @@ public class CommandDC {
 				
 				//send the file name
 				outStream.writeObject(fileName);
-				
-				
-				//ERRO
-				//|
-				//|
-				//|
-				//v
 				
 				//check if file exists on the server
 				Boolean fileExistServer = (Boolean) inStream.readObject();

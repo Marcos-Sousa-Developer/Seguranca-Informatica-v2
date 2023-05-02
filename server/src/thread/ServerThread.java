@@ -59,9 +59,10 @@ public class ServerThread extends Thread {
 					
 					}else if (option2.equals("-d")) {  
 						
+						
 						String destUsername = (String) inStream.readObject();
 						String commandToDo = (String) inStream.readObject();
-						
+
 						new VerifyCommandD(username, destUsername, commandToDo).verify(inStream, outStream);
 						
 					} 

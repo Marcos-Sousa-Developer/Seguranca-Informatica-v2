@@ -29,10 +29,10 @@ public class VerifyCommandC {
 	public void verify(ObjectInputStream inStream, ObjectOutputStream outStream)
 			throws ClassNotFoundException, IOException {
 		
-		String type = from.equals(null) ? "" : this.from;
+		String type = this.from == null ? "" : "." + this.from;
 		
 		int filesDim = (int) inStream.readObject();
-
+		
 		for (int i = 0; i < filesDim; i++) {
 
 			Boolean fileExistClient = (Boolean) inStream.readObject();
@@ -46,7 +46,7 @@ public class VerifyCommandC {
 
 				//check if file does not exists on the server
 				Boolean fileExistServer = fcifrado.exists() || fseguro.exists();
-
+				
 				//send the output
 				outStream.writeObject(fileExistServer);
 

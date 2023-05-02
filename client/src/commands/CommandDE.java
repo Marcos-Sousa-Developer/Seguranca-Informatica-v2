@@ -126,7 +126,7 @@ public class CommandDE {
 	 */
 	private void cipherKey(String fileName) throws KeyStoreException, NoSuchAlgorithmException, CertificateException, IOException, UnrecoverableKeyException, NoSuchPaddingException, InvalidKeyException, IllegalBlockSizeException {
 		
-		String path = "../truststore/"+this.destUsername+".cer"; 
+		String path = "../keystore/"+this.destUsername+".cer"; 
 		
     	FileInputStream certToVerify = new FileInputStream(path);
     	
@@ -157,7 +157,7 @@ public class CommandDE {
     	// cipher key
     	byte[] wrappedKey = c.wrap(keyAES);	
     	
-    	FileOutputStream fos = new FileOutputStream("../files/" + fileName + ".keykey");
+    	FileOutputStream fos = new FileOutputStream("../files/" + fileName + ".chave_secreta");
     	
     	fos.write(wrappedKey); 
     	
@@ -227,7 +227,7 @@ public class CommandDE {
 					fileInStream.close(); 
 					secureFile.delete();
 					
-					File fileKeyCiph = new File("../files/" + fileName + ".keykey");
+					File fileKeyCiph = new File("../files/" + fileName + ".chave_secreta");
 					
 					FileInputStream fileInStreamkey = new FileInputStream(fileKeyCiph);  
 					

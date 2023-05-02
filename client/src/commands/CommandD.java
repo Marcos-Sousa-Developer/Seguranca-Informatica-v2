@@ -6,6 +6,7 @@ import java.security.*;
 import java.security.cert.CertificateException;
 import java.util.*;
 
+import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 
@@ -54,7 +55,7 @@ public class CommandD {
 		}
 	}
 	
-	public void sendToServer(ObjectOutputStream outStream, ObjectInputStream inStream) throws IOException, ClassNotFoundException, InvalidKeyException, UnrecoverableKeyException, NoSuchAlgorithmException, NoSuchPaddingException, KeyStoreException, CertificateException, IllegalBlockSizeException {
+	public void sendToServer(ObjectOutputStream outStream, ObjectInputStream inStream) throws IOException, ClassNotFoundException, InvalidKeyException, UnrecoverableKeyException, NoSuchAlgorithmException, NoSuchPaddingException, KeyStoreException, CertificateException, IllegalBlockSizeException, SignatureException, BadPaddingException {
 		
 		//Send the option first
 		outStream.writeObject("-d");
@@ -65,12 +66,12 @@ public class CommandD {
 				
 		if(this.commandToDo.equals("-c")) {
 			
-			new CommandDC(this.username, this.password, this.destUsername, this.filesDestUsername).sendToServer(outStream, inStream);;
+			new CommandDC(this.username, this.password, this.destUsername, this.filesDestUsername).sendToServer(outStream, inStream);
 		}
 		
 		if(this.commandToDo.equals("-e")) {
 			
-			new CommandDE(this.username, this.password, this.destUsername, this.filesDestUsername);
+			new CommandDE(this.username, this.password, this.destUsername, this.filesDestUsername).sendToServer(outStream, inStream);
 		}
 		
 		

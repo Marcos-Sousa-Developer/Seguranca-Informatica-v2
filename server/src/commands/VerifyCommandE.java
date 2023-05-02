@@ -27,13 +27,14 @@ public class VerifyCommandE {
 	 */
 	public void verify(ObjectInputStream inStream, ObjectOutputStream outStream) throws ClassNotFoundException, IOException {
 		
-		String type = from.equals(null) ? "" : this.from;
+		String type = this.from == null ? "" : "." + this.from;
 		
 		int numFiles = (int) inStream.readObject(); 
 		
 		for (int i = 0; i < numFiles; i++) {
 			
 			Boolean fileExistClient = (Boolean) inStream.readObject();
+			
 		
 			if (fileExistClient) {
 				String fileName = (String) inStream.readObject();
@@ -44,7 +45,7 @@ public class VerifyCommandE {
 				File fseguro = new File("../cloud/"+this.username+"/files/" + fileName + ".seguro" + type);
 				
 				Boolean fileExistServer = fcifrado.exists() || fassinado.exists() || fseguro.exists();
-
+								
 				outStream.writeObject(fileExistServer);
 
 				if (!fileExistServer) {

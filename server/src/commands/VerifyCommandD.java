@@ -32,9 +32,9 @@ public class VerifyCommandD {
 	public void verify(ObjectInputStream inStream, ObjectOutputStream outStream) throws IOException, ClassNotFoundException {
 		
 		Boolean needsDestUserCert = (boolean) inStream.readObject();  
-		
+
 		if(needsDestUserCert) {
-			String path = "../cloud/usersCert/"+destUsername+".cer";
+			String path = "../cloud/usersCert/" + this.destUsername + ".cer";
 			File cer = new File(path);
 			if(!cer.exists()) {
 				outStream.writeObject(false);
@@ -45,22 +45,19 @@ public class VerifyCommandD {
 				
 				outStream.writeObject(destUserCert.readAllBytes());
 				if(this.commandToDo.equals("-c")) {
-					new VerifyCommandC(this.destUsername,this.username);
+					new VerifyCommandC(this.destUsername,this.username).verify(inStream, outStream);
 				}
 				if(this.commandToDo.equals("-e")) {
-					new VerifyCommandE(this.destUsername,this.username);
+					new VerifyCommandE(this.destUsername,this.username).verify(inStream, outStream);
 				}
 			}
-		}
-		
-		else {
+		} else {
 			if(this.commandToDo.equals("-c")) {
-				new VerifyCommandC(this.destUsername,this.username);
+				new VerifyCommandC(this.destUsername,this.username).verify(inStream, outStream);;
 			}
 			if(this.commandToDo.equals("-e")) {
-				new VerifyCommandE(this.destUsername,this.username);
+				new VerifyCommandE(this.destUsername,this.username).verify(inStream, outStream);
 			}
-			
 		}
 	}
 }
