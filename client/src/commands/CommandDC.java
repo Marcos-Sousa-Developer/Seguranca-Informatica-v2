@@ -132,7 +132,7 @@ public class CommandDC {
 	public void sendToServer(ObjectOutputStream outStream, ObjectInputStream inStream) throws IOException, ClassNotFoundException, InvalidKeyException, NoSuchAlgorithmException, NoSuchPaddingException, UnrecoverableKeyException, KeyStoreException, CertificateException, IllegalBlockSizeException {
 		
 		outStream.writeObject(this.filesDestUsername.size());
-		
+
 		for (String fileName : this.filesDestUsername) {
 			
 			// get the file that you want to send
@@ -149,6 +149,13 @@ public class CommandDC {
 				
 				//send the file name
 				outStream.writeObject(fileName);
+				
+				
+				//ERRO
+				//|
+				//|
+				//|
+				//v
 				
 				//check if file exists on the server
 				Boolean fileExistServer = (Boolean) inStream.readObject();

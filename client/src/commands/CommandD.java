@@ -3,6 +3,7 @@ package commands;
 
 import java.io.*;
 import java.security.*;
+import java.security.cert.CertificateException;
 import java.util.*;
 
 import javax.crypto.IllegalBlockSizeException;
@@ -28,7 +29,7 @@ public class CommandD {
 	
 	private void getDestPublicCert(ObjectOutputStream outStream, ObjectInputStream inStream) throws IOException, ClassNotFoundException { 
 		
-		String path = "../truststore/"+this.destUsername+".cer"; 
+		String path = "../keystore/"+this.destUsername+".cer"; 
 		
 		File destCert = new File(path); 
 		
@@ -36,7 +37,7 @@ public class CommandD {
 			outStream.writeObject(true);
 			
 			if((boolean) inStream.readObject() == false) {
-				System.out.println("User " + this.destUsername + "does not exist!");
+				System.out.println("User " + this.destUsername + " does not exist!");
 				System.exit(-1);
 			}
 			else {
@@ -53,7 +54,7 @@ public class CommandD {
 		}
 	}
 	
-	public void sendToServer(ObjectOutputStream outStream, ObjectInputStream inStream) throws IOException, ClassNotFoundException {
+	public void sendToServer(ObjectOutputStream outStream, ObjectInputStream inStream) throws IOException, ClassNotFoundException, InvalidKeyException, UnrecoverableKeyException, NoSuchAlgorithmException, NoSuchPaddingException, KeyStoreException, CertificateException, IllegalBlockSizeException {
 		
 		//Send the option first
 		outStream.writeObject("-d");
@@ -61,10 +62,10 @@ public class CommandD {
 		outStream.writeObject(this.commandToDo); 
 		
 		getDestPublicCert(outStream, inStream);
-		
+				
 		if(this.commandToDo.equals("-c")) {
 			
-			new CommandDC(this.username, this.password, this.destUsername, this.filesDestUsername);
+			new CommandDC(this.username, this.password, this.destUsername, this.filesDestUsername).sendToServer(outStream, inStream);;
 		}
 		
 		if(this.commandToDo.equals("-e")) {

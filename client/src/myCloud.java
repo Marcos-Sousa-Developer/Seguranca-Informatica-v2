@@ -187,7 +187,7 @@ public class myCloud {
 		
 		String username = args[3]; 	
 		String password = args[4];
-		
+
 		
 		if(args[2].equals("-au")) {
 			checkKeystore(username,password);
@@ -197,18 +197,16 @@ public class myCloud {
 			password = args[5];
 			checkKeystore(username,args[5]);
 		}
-			
+
 		System.setProperty("javax.net.ssl.trustStore", "../keystore/"+username+".keystore");
 		System.setProperty("javax.net.ssl.trustStorePassword", password);
 		System.setProperty("javax.net.ssl.keyStoreType", "PKCS12");
-			
 		Socket socket = null; 
 		
 		
 		try {
 			SocketFactory sf = SSLSocketFactory.getDefault();
 			socket = sf.createSocket(address[0], Integer.parseInt(address[1]));
-			
 		}
 		catch (ConnectException e) {
 			System.out.println("Connection refused, please check the Port");
@@ -228,7 +226,6 @@ public class myCloud {
 			System.out.println("Password of your keystore should be the same as the user account");
 			System.exit(-1);
 		}
-		
 		ObjectOutputStream outStream = new ObjectOutputStream(socket.getOutputStream());
 		ObjectInputStream inStream = new ObjectInputStream(socket.getInputStream());
 		
@@ -240,7 +237,7 @@ public class myCloud {
 			    	System.exit(-1);
 				}
 				else {
-					System.err.println("User " + "username" + " created.");
+					System.err.println("User " + username + " created.");
 			    	System.exit(0);
 				}
 				break;
@@ -279,7 +276,7 @@ public class myCloud {
 							String commandToDo = args[8];
 							List<String> filesDestUsername = null;
 							filesDestUsername = new ArrayList<>(Arrays.asList(args)).subList(9, args.length);
-						
+
 							new CommandD(username, password, destUsername, commandToDo, filesDestUsername).sendToServer(outStream, inStream);
 
 							break;
