@@ -70,7 +70,7 @@ public class ServerThread extends Thread {
 			} else if (option1.equals("-au")) {
 
 				byte[] cert = inStream.readAllBytes();
-			
+
 				Boolean isNewUser = new NewUser().searchUsername(username, password); 
 				
 				if(isNewUser) {
