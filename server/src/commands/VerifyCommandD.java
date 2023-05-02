@@ -44,16 +44,19 @@ public class VerifyCommandD {
 				FileInputStream destUserCert = new FileInputStream(cer); 
 				
 				outStream.writeObject(destUserCert.readAllBytes());
-				
+				if(this.commandToDo.equals("-c")) {
+					new VerifyCommandC(this.destUsername,this.username);
+				}
 				if(this.commandToDo.equals("-e")) {
 					new VerifyCommandE(this.destUsername,this.username);
 				}
-				
 			}
 		}
 		
 		else {
-			
+			if(this.commandToDo.equals("-c")) {
+				new VerifyCommandC(this.destUsername,this.username);
+			}
 			if(this.commandToDo.equals("-e")) {
 				new VerifyCommandE(this.destUsername,this.username);
 			}

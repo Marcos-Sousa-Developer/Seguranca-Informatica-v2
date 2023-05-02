@@ -9,10 +9,16 @@ import java.io.ObjectOutputStream;
 
 public class VerifyCommandC { 
 	
-	private String username; 
+	private String username;
+	private String from = null;
 	
 	public VerifyCommandC(String username) {
 		this.username = username;
+	}
+	
+	public VerifyCommandC(String username, String from) {
+		this.username = username;
+		this.from = from;
 	}
 	
 	/**
@@ -22,6 +28,9 @@ public class VerifyCommandC {
 	 */
 	public void verify(ObjectInputStream inStream, ObjectOutputStream outStream)
 			throws ClassNotFoundException, IOException {
+		
+		String type = from.equals(null) ? "" : this.from;
+		
 		int filesDim = (int) inStream.readObject();
 
 		for (int i = 0; i < filesDim; i++) {
@@ -32,8 +41,8 @@ public class VerifyCommandC {
 			if (fileExistClient) {
 				String fileName = (String) inStream.readObject();
 
-				File fcifrado = new File("../cloud/"+this.username+"/files/"+ fileName + ".cifrado");
-				File fseguro = new File("../cloud/"+this.username+"/files/" + fileName + ".seguro");
+				File fcifrado = new File("../cloud/"+this.username+"/files/"+ fileName + ".cifrado" + type);
+				File fseguro = new File("../cloud/"+this.username+"/files/" + fileName + ".seguro" + type);
 
 				//check if file does not exists on the server
 				Boolean fileExistServer = fcifrado.exists() || fseguro.exists();
@@ -48,7 +57,7 @@ public class VerifyCommandC {
 
 					String fileNameCif = (String) inStream.readObject();
 
-					FileOutputStream outFileStreamCif = new FileOutputStream("../cloud/"+this.username+"/files/" + fileNameCif);
+					FileOutputStream outFileStreamCif = new FileOutputStream("../cloud/"+this.username+"/files/" + fileNameCif + type);
 					BufferedOutputStream outFileCif = new BufferedOutputStream(outFileStreamCif);
 
 					try {
@@ -79,7 +88,7 @@ public class VerifyCommandC {
 
 					String fileNameKey = (String) inStream.readObject();
 
-					FileOutputStream outFileStreamKey = new FileOutputStream("../cloud/"+this.username+"/keys/" + fileNameKey);
+					FileOutputStream outFileStreamKey = new FileOutputStream("../cloud/"+this.username+"/keys/" + fileNameKey + type);
 
 					BufferedOutputStream outFileKey = new BufferedOutputStream(outFileStreamKey);
 

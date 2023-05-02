@@ -45,16 +45,12 @@ public class CommandD {
 				FileOutputStream newDestUserCert = new FileOutputStream(path); 
 				newDestUserCert.write(destCertbytes);
 				newDestUserCert.close();
-				
 			}
-			
 		}
 		
 		else {
 			outStream.writeObject(false);
-			
 		}
-		
 	}
 	
 	public void sendToServer(ObjectOutputStream outStream, ObjectInputStream inStream) throws IOException, ClassNotFoundException {
@@ -65,6 +61,11 @@ public class CommandD {
 		outStream.writeObject(this.commandToDo); 
 		
 		getDestPublicCert(outStream, inStream);
+		
+		if(this.commandToDo.equals("-c")) {
+			
+			new CommandDC(this.username, this.password, this.destUsername, this.filesDestUsername);
+		}
 		
 		if(this.commandToDo.equals("-e")) {
 			
