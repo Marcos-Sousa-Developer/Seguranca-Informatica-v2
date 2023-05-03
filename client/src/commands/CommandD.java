@@ -29,7 +29,6 @@ public class CommandD {
 	}
 	
 	private void getDestPublicCert(ObjectOutputStream outStream, ObjectInputStream inStream) throws IOException, ClassNotFoundException { 
-		
 		String path = "../keystore/"+this.destUsername+".cer"; 
 		
 		File destCert = new File(path); 
@@ -72,6 +71,11 @@ public class CommandD {
 		if(this.commandToDo.equals("-e")) {
 			
 			new CommandDE(this.username, this.password, this.destUsername, this.filesDestUsername).sendToServer(outStream, inStream);
+		}
+		if(this.commandToDo.equals("-s")) {
+
+			new CommandDS(this.username, this.password, this.destUsername, this.filesDestUsername).sendToServer(outStream, inStream);
+			
 		}
 		
 		

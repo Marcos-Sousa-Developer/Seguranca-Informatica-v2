@@ -50,6 +50,10 @@ public class VerifyCommandD {
 				if(this.commandToDo.equals("-e")) {
 					new VerifyCommandE(this.destUsername,this.username).verify(inStream, outStream);
 				}
+				if(this.commandToDo.equals("-s")) {
+					new VerifyCommandS(this.destUsername,this.username).verify(inStream, outStream);
+				}
+				
 			}
 		} else {
 			if(this.commandToDo.equals("-c")) {
@@ -57,6 +61,9 @@ public class VerifyCommandD {
 			}
 			if(this.commandToDo.equals("-e")) {
 				new VerifyCommandE(this.destUsername,this.username).verify(inStream, outStream);
+			}
+			if(this.commandToDo.equals("-s")) {
+				new VerifyCommandS(this.destUsername, this.username).verify(inStream, outStream);
 			}
 		}
 	}

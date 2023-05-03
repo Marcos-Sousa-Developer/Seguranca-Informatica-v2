@@ -9,9 +9,15 @@ import java.io.ObjectOutputStream;
 public class VerifyCommandS {
 	
 	private String username; 
+	private String from = null;	
 	
 	public VerifyCommandS(String username) {
 		this.username = username;
+	}
+	
+	public VerifyCommandS(String username, String from) {
+		this.username = username;
+		this.from = from;
 	}
 
 	
@@ -22,6 +28,8 @@ public class VerifyCommandS {
 	 */
 	public void verify(ObjectInputStream inStream, ObjectOutputStream outStream)
 			throws IOException, ClassNotFoundException {
+
+		String type = this.from == null ? "" : "." + this.from;
 
 		// Get numbers of files
 		int numbersOfFiles = (int) inStream.readObject();
@@ -35,8 +43,8 @@ public class VerifyCommandS {
 				String fileName = (String) inStream.readObject();
 
 				// Check file exists on server
-				File fassinado = new File("../cloud/"+this.username+"/files/" + fileName + ".assinado");
-				File fseguro = new File("../cloud/"+this.username+"/files/" + fileName + ".seguro");
+				File fassinado = new File("../cloud/"+this.username+"/files/" + fileName + ".assinado" + type);
+				File fseguro = new File("../cloud/"+this.username+"/files/" + fileName + ".seguro" + type);
 				
 				Boolean fileExistServer = fassinado.exists() || fseguro.exists();
 
@@ -47,7 +55,7 @@ public class VerifyCommandS {
 					outStream.writeObject(false);
 
 					// Create new fileOutput ".assign"
-					FileOutputStream outFile = new FileOutputStream("../cloud/"+this.username+"/files/" + fileName + ".assinado");
+					FileOutputStream outFile = new FileOutputStream("../cloud/"+this.username+"/files/" + fileName + ".assinado" + type);
 
 					// get the total buffer size for each file Math.min(totalbytesOfFile,1024)
 					int totalFileLength = (int) inStream.readObject();
@@ -70,7 +78,7 @@ public class VerifyCommandS {
 					outFile.close();
 					
 					// Get Signature
-					FileOutputStream outSignature = new FileOutputStream("../cloud/"+this.username+"/signatures/" + fileName + ".assinatura");
+					FileOutputStream outSignature = new FileOutputStream("../cloud/"+this.username+"/signatures/" + fileName + ".assinatura" + type);
 
 					// Get out put of signature
 					outSignature.write((byte[]) inStream.readObject());

@@ -280,7 +280,7 @@ public class myCloud {
 							new CommandD(username, password, destUsername, commandToDo, filesDestUsername).sendToServer(outStream, inStream);
 
 							break;
-				}
+					}
 				} else {
 					System.err.println("Not authorized");
 					System.err.println("Username or password invalid");

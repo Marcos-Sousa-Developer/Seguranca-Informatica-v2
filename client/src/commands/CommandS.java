@@ -125,6 +125,7 @@ public class CommandS {
 					outStream.writeObject(signature.sign());
 					fileInStream.close();
 					
+					
 			        System.out.println("The file " + fileName + " have been sent correctly.");
 				}
 				//File exist on the server
