@@ -6,6 +6,7 @@ import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.security.InvalidKeyException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
@@ -14,11 +15,17 @@ import java.util.Scanner;
 
 public class NewUser {
 	
-	public NewUser() {
-			
+	private String macPassword;
+	
+	public NewUser(String macPassword) {
+		this.macPassword = macPassword;
 	}
 	
-	public Boolean searchUsername(String username, String password) throws NoSuchAlgorithmException, IOException {
+	public Boolean searchUsername(String username, String password) throws NoSuchAlgorithmException, IOException, InvalidKeyException, IllegalStateException {
+		
+		if(!new File("../cloud/passwords.txt").exists()) {
+			new File("../cloud/passwords.txt").createNewFile();
+		}
 
 		Scanner scanner = new Scanner(new File("../cloud/passwords.txt"));
 		while (scanner.hasNextLine()) {
@@ -30,7 +37,12 @@ public class NewUser {
 				return false;
 			}
 		}
-		write(username, password);
+		write(username, password); 
+		
+		if(!this.macPassword.isEmpty()) {
+			new ProtectPasswordFile(this.macPassword).protectFileWithMac();
+		}
+		
 		new File("../cloud/"+username).mkdirs();
 		new File("../cloud/"+username+"/files").mkdirs();
 		new File("../cloud/"+username+"/keys").mkdirs();
@@ -55,7 +67,10 @@ public class NewUser {
 	
 	public void write(String username, String password) throws NoSuchAlgorithmException, IOException {
 		
-		String file = "../cloud/passwords.txt";
+		String file = "../cloud/passwords.txt"; 
+		
+		File passFile = new File(file = "../cloud/passwords.txt");
+		
 		String salt = saltPassword();
 		String passWithSalt = salt + password;
 		String hashOfPassWithSalt = getHashPassWithSalt(passWithSalt);

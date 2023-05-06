@@ -274,8 +274,7 @@ public class myCloud {
 						case "-d":
 							String destUsername = args[7];
 							String commandToDo = args[8];
-							List<String> filesDestUsername = null;
-							filesDestUsername = new ArrayList<>(Arrays.asList(args)).subList(9, args.length);
+							 List<String> filesDestUsername = new ArrayList<>(Arrays.asList(args)).subList(9, args.length);
 
 							new CommandD(username, password, destUsername, commandToDo, filesDestUsername).sendToServer(outStream, inStream);
 

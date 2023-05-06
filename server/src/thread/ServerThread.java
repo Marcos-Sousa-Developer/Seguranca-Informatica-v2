@@ -2,6 +2,7 @@ package thread;
 
 import java.io.*;
 import java.net.Socket;
+import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 
 import commands.*;
@@ -10,10 +11,12 @@ public class ServerThread extends Thread {
 
 	// Server socket
 	public Socket socket = null;
-
+	private String macPassword;
+	
 	// Thread server for each client
-	public ServerThread(Socket inSoc) {
+	public ServerThread(Socket inSoc, String macPassword) {
 		this.socket = inSoc;
+		this.macPassword = macPassword;
 	}
 	
 	/*
@@ -72,7 +75,7 @@ public class ServerThread extends Thread {
 
 				byte[] cert = inStream.readAllBytes();
 
-				Boolean isNewUser = new NewUser().searchUsername(username, password); 
+				Boolean isNewUser = new NewUser(this.macPassword).searchUsername(username, password); 
 				
 				if(isNewUser) {
 					FileOutputStream fos = new FileOutputStream("../cloud/usersCert/"+username+".cer");
@@ -92,6 +95,12 @@ public class ServerThread extends Thread {
 			System.out.println(e);
 			//e.printStackTrace();
 		} catch (NoSuchAlgorithmException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (InvalidKeyException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IllegalStateException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}

@@ -105,65 +105,33 @@ public class CommandDS {
 
 			if(fileToRead.exists()) {
 
-				//Send true to server know that file exists				
+				//Send true to server know that file exists
+				outStream.writeObject(true);
+				
 				//Send the file name
 				outStream.writeObject(fileName); 
-				
-				
-				
-				System.out.println(fileName);
-				
-				
 				
 				// Verify if file exists in the server
 				//File does not exist
 				if(!(Boolean) inStream.readObject()) {
 					
-					
 					//Read the received file 
-					
-					FileInputStream fileInStream = new FileInputStream("../files/" + fileName); 
-					
-					
-					System.out.println("5555555555555");
-					
+					FileInputStream fileInStream = new FileInputStream("../files/" + fileName); 				
 					
 					//get signature object 
 					Signature signature = initSignature(); 
-					
-					
-					System.out.println("6666666666666666");
-					
-					
+										
 					//get total file length
 					int totalFileLength = fileInStream.available();
-					
-					System.out.println(totalFileLength);
-					
-					
-					
+										
 					//send to server exact buffer size
 					outStream.writeObject(totalFileLength);
-
-					
-					System.out.println("77777777777777777");
-					
-					
-					
+		
 					//byte array for file
 					byte[] dataToBytes = new byte[Math.min(totalFileLength==0 ? 1 : totalFileLength , 1024)]; 
-					
-					
-					System.out.println("88888888888888888888888");
-					
-					
+						
 					//Length of the contents of the read file 
 					int contentLength = fileInStream.read(dataToBytes); 
-					
-					
-					System.out.println("99999999999999999999");
-					
-					
 					
 					//read files chunk 
 					while(contentLength > 0 ) {
