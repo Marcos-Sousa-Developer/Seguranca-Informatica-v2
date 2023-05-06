@@ -10,8 +10,12 @@ import java.security.InvalidKeyException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
+import java.security.spec.InvalidKeySpecException;
 import java.util.Base64;
 import java.util.Scanner;
+
+import javax.crypto.SecretKeyFactory;
+import javax.crypto.spec.PBEKeySpec;
 
 public class NewUser {
 	
@@ -21,7 +25,7 @@ public class NewUser {
 		this.macPassword = macPassword;
 	}
 	
-	public Boolean searchUsername(String username, String password) throws NoSuchAlgorithmException, IOException, InvalidKeyException, IllegalStateException {
+	public Boolean searchUsername(String username, String password) throws NoSuchAlgorithmException, IOException, InvalidKeyException, IllegalStateException, InvalidKeySpecException {
 		
 		if(!new File("../cloud/passwords.txt").exists()) {
 			new File("../cloud/passwords.txt").createNewFile();
@@ -50,36 +54,38 @@ public class NewUser {
 		return true;
 	}
 	
-	public static String saltPassword() {
+	public static byte[] saltPassword() {
 		
 		//gerar chave salt
 		SecureRandom random = new SecureRandom();
 		byte[] salt = new byte[16];
 		random.nextBytes(salt);
-		return Base64.getEncoder().encodeToString(salt);	
+		
+		return salt; //Base64.getEncoder().encodeToString(salt);	
 	}
 	
-	public static String getHashPassWithSalt(String passWithSalt) throws NoSuchAlgorithmException {
-		MessageDigest digest = MessageDigest.getInstance("SHA-256");
-		byte[] hash = digest.digest(passWithSalt.getBytes());
-		return Base64.getEncoder().encodeToString(hash);
+	public static String getHashPassWithSalt(String password, byte[] salt) throws NoSuchAlgorithmException, InvalidKeySpecException {
+		//password, salt, iterator number, length
+		PBEKeySpec spec = new PBEKeySpec(password.toCharArray(), salt, 65536, 256);
+		SecretKeyFactory factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256");
+		byte[] hashedPassword = factory.generateSecret(spec).getEncoded();
+		return Base64.getEncoder().encodeToString(hashedPassword);
 	}
 	
-	public void write(String username, String password) throws NoSuchAlgorithmException, IOException {
+	public void write(String username, String password) throws NoSuchAlgorithmException, IOException, InvalidKeySpecException {
 		
 		String file = "../cloud/passwords.txt"; 
 		
 		File passFile = new File(file = "../cloud/passwords.txt");
 		
-		String salt = saltPassword();
-		String passWithSalt = salt + password;
-		String hashOfPassWithSalt = getHashPassWithSalt(passWithSalt);
+		byte[] salt = saltPassword();
+		String hashOfPassWithSalt = getHashPassWithSalt(password, salt);
 
 		FileWriter fw = new FileWriter(file, true);
 		
 		BufferedWriter bw = new BufferedWriter(fw);
 				
-		bw.append(username + ";" + hashOfPassWithSalt + ";" + salt + '\n');	
+		bw.append(username + ";" + hashOfPassWithSalt + ";" + Base64.getEncoder().encodeToString(salt) + '\n');	
 		
 		bw.close();
 		fw.close();
