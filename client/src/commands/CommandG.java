@@ -225,61 +225,70 @@ public class CommandG {
 						}
 						
 						String option = (String) inStream.readObject();
-						String nameFileToSave = (String) inStream.readObject();
+						String nameFileToSave = (String) inStream.readObject(); 
 						
-						if(option.equals("-c")) {
-							byte[] secretKeyInByte = new byte[256];
-							inStream.read(secretKeyInByte);
-							decryptFile(secretKeyInByte, inStream, nameFileToSave);
-						}
-						
-						else if (option.equals("-s")) {
+						if(!new File("../receivedFiles/"+nameFileToSave).exists()) {
 							
-							//get signature
-							byte[] signatureInByte = new byte[256];
-							inStream.read(signatureInByte);
+							outStream.writeObject(true);
 							
-							FileOutputStream outFile = new FileOutputStream("../receivedFiles/" + nameFileToSave); 
-											
-							int totalFileLength = (int) inStream.readObject();
-							
-							byte[] bufferData = new byte[Math.min(totalFileLength==0 ? 1 : totalFileLength , 1024)];
-															
-							int contentFileLength = inStream.read(bufferData);
-							
-							//get file chunks and store in "../receivedFiles/"
-							while (contentFileLength > 0 && totalFileLength > 0) {
-								if (totalFileLength >= contentFileLength) {
-									outFile.write(bufferData, 0, contentFileLength);
-								} else {
-									outFile.write(bufferData, 0, totalFileLength);
-								}
-								totalFileLength -= contentFileLength; 
-								
-								if(contentFileLength > 0 && totalFileLength > 0) {
-									contentFileLength = inStream.read(bufferData);
-								}
+							if(option.equals("-c")) {
+								byte[] secretKeyInByte = new byte[256];
+								inStream.read(secretKeyInByte);
+								decryptFile(secretKeyInByte, inStream, nameFileToSave);
 							}
-							outFile.close(); 
-							//initialize verify file
-							initVerifyFile(signatureInByte, nameFileToSave);
 							
-						}
-						
-						else if (option.equals("-e")) {
-							//get secret key
-							byte[] secretKeyInByte = new byte[256];
-							inStream.read(secretKeyInByte);
-							
-							//get signature
-							byte[] signatureInByte = new byte[256];
-							inStream.read(signatureInByte); 
+							else if (option.equals("-s")) {
+								
+								//get signature
+								byte[] signatureInByte = new byte[256];
+								inStream.read(signatureInByte);
+								
+								FileOutputStream outFile = new FileOutputStream("../receivedFiles/" + nameFileToSave); 
 												
-							decryptFile(secretKeyInByte, inStream, nameFileToSave); 
-							initVerifyFile(signatureInByte, nameFileToSave);
+								int totalFileLength = (int) inStream.readObject();
+								
+								byte[] bufferData = new byte[Math.min(totalFileLength==0 ? 1 : totalFileLength , 1024)];
+																
+								int contentFileLength = inStream.read(bufferData);
+								
+								//get file chunks and store in "../receivedFiles/"
+								while (contentFileLength > 0 && totalFileLength > 0) {
+									if (totalFileLength >= contentFileLength) {
+										outFile.write(bufferData, 0, contentFileLength);
+									} else {
+										outFile.write(bufferData, 0, totalFileLength);
+									}
+									totalFileLength -= contentFileLength; 
+									
+									if(contentFileLength > 0 && totalFileLength > 0) {
+										contentFileLength = inStream.read(bufferData);
+									}
+								}
+								outFile.close(); 
+								//initialize verify file
+								initVerifyFile(signatureInByte, nameFileToSave);
+								
+							}
+							
+							else if (option.equals("-e")) {
+								//get secret key
+								byte[] secretKeyInByte = new byte[256];
+								inStream.read(secretKeyInByte);
+								
+								//get signature
+								byte[] signatureInByte = new byte[256];
+								inStream.read(signatureInByte); 
+													
+								decryptFile(secretKeyInByte, inStream, nameFileToSave); 
+								initVerifyFile(signatureInByte, nameFileToSave);
 
+							}
 						}
-						
+						else {
+							
+							System.out.println("You already have the file " + nameFileToSave + ".");
+							
+						}
 					}	
 				}
 				

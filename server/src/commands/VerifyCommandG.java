@@ -81,7 +81,7 @@ public class VerifyCommandG {
 		                	sendToClient(outStream, "-e", file, fileName, extension);
 		                }
 		                
-		                System.out.println("The file " + file.getName() + " already sent!");
+		                System.out.println("The file " + file.getName() + " was sent!");
 		            }
 		            else {
 		            	outStream.writeObject(false);
@@ -96,64 +96,77 @@ public class VerifyCommandG {
 	
 	/**
 	 * Send files to client
+	 * @throws ClassNotFoundException 
 	 * @ObjectOutputStream outStream
 	 * @String option client manager option
 	 * @File fileToRead 
 	 * @String fileName
 	 */
-	private void sendToClient(ObjectOutputStream outStream, String option, File fileToRead, String fileName, String extension) throws IOException {
+	private void sendToClient(ObjectInputStream inStream, ObjectOutputStream outStream, String option, File fileToRead, String fileName, String extension) throws IOException, ClassNotFoundException {
 		
 		String fileToCheck = fileToRead.getName();
 		
-		outStream.writeObject(option); 
-		outStream.writeObject(fileToCheck.contains("cifrado") ? fileToCheck.replace("cifrado", "decifrado") : fileToCheck);
+		outStream.writeObject(option);  
+		String fileToSave = fileToCheck.contains("cifrado") ? fileToCheck.replace("cifrado", "decifrado") : fileToCheck;
+		outStream.writeObject(fileToSave); 
 		
-		extension = extension.equals("") ? extension : "." + extension;
+		if((boolean) inStream.readObject()) {
+			
+			extension = extension.equals("") ? extension : "." + extension;
+			
+			if(option.equals("-c")) {
+				String concat = fileName + ".chave_secreta" + extension;
+				System.out.println(concat);
+				FileInputStream fileInStreamSecretKey = new FileInputStream("../cloud/"+this.username+"/keys/" + concat); 
+				outStream.write(fileInStreamSecretKey.readAllBytes());
+				fileInStreamSecretKey.close();
+			} 
+			
+			else if (option.equals("-s")) {
+				String concat = fileName + ".assinatura" + extension;
+				System.out.println(concat);
+				FileInputStream fileInStreamSignature = new FileInputStream("../cloud/"+this.username+"/signatures/" + concat); 
+				outStream.write(fileInStreamSignature.readAllBytes()); 
+				fileInStreamSignature.close();
+			}
+			
+			else if (option.equals("-e")){
+				String concat = fileName + ".chave_secreta" + extension;
+				System.out.println(concat);
+				FileInputStream fileInStreamSecretKey = new FileInputStream("../cloud/"+this.username+"/keys/" + concat); 
+				outStream.write(fileInStreamSecretKey.readAllBytes());
+				fileInStreamSecretKey.close();
+				concat = fileName + ".assinatura." + extension;
+				FileInputStream fileInStreamSignature = new FileInputStream("../cloud/"+this.username+"/signatures/" + concat); 
+				outStream.write(fileInStreamSignature.readAllBytes()); 
+				fileInStreamSignature.close();
+			}
+			
 		
-		if(option.equals("-c")) {
-			String concat = fileName + ".chave_secreta" + extension;
-			System.out.println(concat);
-			FileInputStream fileInStreamSecretKey = new FileInputStream("../cloud/"+this.username+"/keys/" + concat); 
-			outStream.write(fileInStreamSecretKey.readAllBytes());
-			fileInStreamSecretKey.close();
-		} 
-		
-		else if (option.equals("-s")) {
-			String concat = fileName + ".assinatura" + extension;
-			System.out.println(concat);
-			FileInputStream fileInStreamSignature = new FileInputStream("../cloud/"+this.username+"/signatures/" + concat); 
-			outStream.write(fileInStreamSignature.readAllBytes()); 
-			fileInStreamSignature.close();
-		}
-		
-		else if (option.equals("-e")){
-			String concat = fileName + ".chave_secreta" + extension;
-			System.out.println(concat);
-			FileInputStream fileInStreamSecretKey = new FileInputStream("../cloud/"+this.username+"/keys/" + concat); 
-			outStream.write(fileInStreamSecretKey.readAllBytes());
-			fileInStreamSecretKey.close();
-			concat = fileName + ".assinatura." + extension;
-			FileInputStream fileInStreamSignature = new FileInputStream("../cloud/"+this.username+"/signatures/" + concat); 
-			outStream.write(fileInStreamSignature.readAllBytes()); 
-			fileInStreamSignature.close();
-		}
-		
-	
-		FileInputStream fileInStream = new FileInputStream(fileToRead); 
-				
-		int totalFileLength = fileInStream.available();
-		
-		outStream.writeObject(totalFileLength);
+			FileInputStream fileInStream = new FileInputStream(fileToRead); 
+					
+			int totalFileLength = fileInStream.available();
+			
+			outStream.writeObject(totalFileLength);
 
-		byte[] dataToBytes = new byte[Math.min(totalFileLength==0 ? 1 : totalFileLength , 1024)];
-		
-		int contentLength = fileInStream.read(dataToBytes);  
-								
-		while(contentLength > 0) {
-			outStream.write(dataToBytes,0,contentLength); 
-			outStream.flush();						
-			contentLength = fileInStream.read(dataToBytes);
+			byte[] dataToBytes = new byte[Math.min(totalFileLength==0 ? 1 : totalFileLength , 1024)];
+			
+			int contentLength = fileInStream.read(dataToBytes);  
+									
+			while(contentLength > 0) {
+				outStream.write(dataToBytes,0,contentLength); 
+				outStream.flush();						
+				contentLength = fileInStream.read(dataToBytes);
+			}
+			
 		}
+		
+		else {
+			
+			System.out.println(this.username + " already have the file " + fileToSave);
+		}
+		
+		
 	}
 	
 }
