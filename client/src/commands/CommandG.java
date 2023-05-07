@@ -18,6 +18,7 @@ import java.security.SignatureException;
 import java.security.UnrecoverableKeyException;
 import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
+import java.security.cert.CertificateFactory;
 import java.util.List;
 
 import javax.crypto.BadPaddingException;
@@ -39,6 +40,27 @@ public class CommandG {
 		this.files = files;
 	}
 	
+	private void getDestPublicCert(String destUsername, ObjectOutputStream outStream, ObjectInputStream inStream) throws IOException, ClassNotFoundException { 
+		String path = "../keystore/"+destUsername+".cer"; 
+		
+		File destCert = new File(path); 
+		
+		if(!destCert.exists()) {
+			
+			outStream.writeObject(true); 
+			
+			byte[] destCertbytes = inStream.readAllBytes(); 
+			FileOutputStream newDestUserCert = new FileOutputStream(path); 
+			newDestUserCert.write(destCertbytes);
+			newDestUserCert.close();
+			
+		}
+		
+		else {
+			outStream.writeObject(false);
+		}
+	}
+	
 	/**
 	 * Verify if file was not tempered.
 	 * @byte[] signatureInByte received signature in bytes
@@ -48,16 +70,35 @@ public class CommandG {
 		
 		Signature s = Signature.getInstance("SHA256withRSA");
 		
-		FileInputStream kfile = new FileInputStream(new File("../keystore/" +this.username + ".keystore"));
-		KeyStore keystore = KeyStore.getInstance("PKCS12");
-		keystore.load(kfile, this.password.toCharArray()); 
-		//Key key = keystore.getKey("si027", "si027marcos&rafael".toCharArray());  
-
-		Certificate cert = keystore.getCertificate(this.username);
+    	boolean needUserCert = 
+    			(fileName.contains(".assinado") && !fileName.endsWith(".assinado")) ||
+    			(fileName.contains(".seguro") && !fileName.endsWith(".seguro"));
+				
+    	
+    	if(!needUserCert) {
+    		
+    		FileInputStream kfile =  new FileInputStream(new File("../keystore/" +this.username + ".keystore"));
+    		KeyStore keystore = KeyStore.getInstance("PKCS12");
+    		keystore.load(kfile, this.password.toCharArray()); 
+    		Certificate cert = keystore.getCertificate(this.username);
+    		PublicKey publicKey = cert.getPublicKey(); 	
+    		s.initVerify(publicKey);
+    		
+    	}
+    	else {
+    		System.out.println(fileName);
+    		int dotIndex = fileName.lastIndexOf(".");
+            String extension = fileName.substring(dotIndex + 1);
+    		String path = "../keystore/"+extension+".cer"; 
+        	FileInputStream certToVerify = new FileInputStream(path);
+            CertificateFactory cf = CertificateFactory.getInstance("X.509");
+            Certificate cer = cf.generateCertificate(certToVerify);
+            certToVerify.close();
+            PublicKey pubKey = cer.getPublicKey();  	    
+    	    s.initVerify(pubKey);
+    	}
 		
-		PublicKey publicKey = cert.getPublicKey(); 	
 		
-		s.initVerify(publicKey);
 		
 		//get the received file to verify
 		FileInputStream fileToVerify = new FileInputStream("../receivedFiles/"+fileName);
@@ -162,90 +203,91 @@ public class CommandG {
 
 		//send type option to get a correct manager
 		outStream.writeObject("-g");
-		outStream.writeObject(this.files.size());
+		outStream.writeObject(this.files.size()); 
 		
 		for (String fileName : this.files) {
 			
-			File fileToVerify = new File("../receivedFiles/" + fileName); 
+			outStream.writeObject(fileName); 
 			
-			boolean alreadyReceived = fileToVerify.exists();
+			int numberFilesToVerify = (int) inStream.readObject(); 
 			
-			outStream.writeObject(alreadyReceived); 
-			
-			if(!alreadyReceived) {
+			if(numberFilesToVerify != 0 ) {
 				
-				outStream.writeObject(fileName); 
-				
-				boolean fileExistsOnServer = (boolean) inStream.readObject(); 
-				
-				if(fileExistsOnServer) {
+				for (int i = 0; i < numberFilesToVerify; i++) {  
 					
-					//after send the requested file, gets correct manager
-					String option = (String) inStream.readObject();
+					boolean proceed = (boolean) inStream.readObject();
 					
-					if(option.equals("-c")) {
-						byte[] secretKeyInByte = new byte[256];
-						inStream.read(secretKeyInByte);
-						decryptFile(secretKeyInByte, inStream, fileName);
-					} 
-					
-					else if (option.equals("-s")) {
+					if(proceed) {  
 						
-						//get signature
-						byte[] signatureInByte = new byte[256];
-						inStream.read(signatureInByte);
-						
-						FileOutputStream outFile = new FileOutputStream("../receivedFiles/" + fileName); 
-										
-						int totalFileLength = (int) inStream.readObject();
-						
-						byte[] bufferData = new byte[Math.min(totalFileLength==0 ? 1 : totalFileLength , 1024)];
-														
-						int contentFileLength = inStream.read(bufferData);
-						
-						//get file chunks and store in "../receivedFiles/"
-						while (contentFileLength > 0 && totalFileLength > 0) {
-							if (totalFileLength >= contentFileLength) {
-								outFile.write(bufferData, 0, contentFileLength);
-							} else {
-								outFile.write(bufferData, 0, totalFileLength);
-							}
-							totalFileLength -= contentFileLength; 
-							
-							if(contentFileLength > 0 && totalFileLength > 0) {
-								contentFileLength = inStream.read(bufferData);
-							}
+						//needs cert
+						if((boolean) inStream.readObject()) {
+							getDestPublicCert((String) inStream.readObject(), outStream, inStream);
 						}
-						outFile.close(); 
-						//initialize verify file
-						initVerifyFile(signatureInByte, fileName);
 						
-					}
-					
-					else {
-						//get secret key
-						byte[] secretKeyInByte = new byte[256];
-						inStream.read(secretKeyInByte);
+						String option = (String) inStream.readObject();
+						String nameFileToSave = (String) inStream.readObject();
 						
-						//get signature
-						byte[] signatureInByte = new byte[256];
-						inStream.read(signatureInByte); 
+						if(option.equals("-c")) {
+							byte[] secretKeyInByte = new byte[256];
+							inStream.read(secretKeyInByte);
+							decryptFile(secretKeyInByte, inStream, nameFileToSave);
+						}
+						
+						else if (option.equals("-s")) {
+							
+							//get signature
+							byte[] signatureInByte = new byte[256];
+							inStream.read(signatureInByte);
+							
+							FileOutputStream outFile = new FileOutputStream("../receivedFiles/" + nameFileToSave); 
 											
-						decryptFile(secretKeyInByte, inStream, fileName); 
-						initVerifyFile(signatureInByte, fileName);
+							int totalFileLength = (int) inStream.readObject();
+							
+							byte[] bufferData = new byte[Math.min(totalFileLength==0 ? 1 : totalFileLength , 1024)];
+															
+							int contentFileLength = inStream.read(bufferData);
+							
+							//get file chunks and store in "../receivedFiles/"
+							while (contentFileLength > 0 && totalFileLength > 0) {
+								if (totalFileLength >= contentFileLength) {
+									outFile.write(bufferData, 0, contentFileLength);
+								} else {
+									outFile.write(bufferData, 0, totalFileLength);
+								}
+								totalFileLength -= contentFileLength; 
+								
+								if(contentFileLength > 0 && totalFileLength > 0) {
+									contentFileLength = inStream.read(bufferData);
+								}
+							}
+							outFile.close(); 
+							//initialize verify file
+							initVerifyFile(signatureInByte, nameFileToSave);
+							
+						}
+						
+						else if (option.equals("-e")) {
+							//get secret key
+							byte[] secretKeyInByte = new byte[256];
+							inStream.read(secretKeyInByte);
+							
+							//get signature
+							byte[] signatureInByte = new byte[256];
+							inStream.read(signatureInByte); 
+												
+							decryptFile(secretKeyInByte, inStream, nameFileToSave); 
+							initVerifyFile(signatureInByte, nameFileToSave);
 
-					}
+						}
+						
+					}	
 				}
 				
-				else {
-					System.err.println("The file " + fileName + " doesn't exist on the server. You must provide a existing file.");
-				}
 			}
-			
 			else {
-				System.err.println("Your already have the file " + fileName + ".");
-
+				System.err.println("The file " + fileName + " doesn't exist on the server. You must provide a existing file.");
 			}
+	
 		}
 	}
 }

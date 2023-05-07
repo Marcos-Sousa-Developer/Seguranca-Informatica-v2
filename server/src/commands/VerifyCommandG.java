@@ -25,48 +25,71 @@ public class VerifyCommandG {
 				
 		for (int i = 0; i < numbersOfFiles; i++) {
 			
-			boolean alreadySent = (boolean) inStream.readObject(); 
+			String fileName = (String) inStream.readObject(); 
 			
-			if(!alreadySent) {
-				
-				String fileName = (String) inStream.readObject(); 
-				
-				// Check file exists on server
-				File fcifrado = new File("../cloud/"+this.username+"/files/" + fileName + ".cifrado");
-				File fassinado = new File("../cloud/"+this.username+"/files/" + fileName + ".assinado");
-				File fseguro = new File("../cloud/"+this.username+"/files/" + fileName + ".seguro");
-				
-				Boolean fileExistServer = fcifrado.exists() || fassinado.exists() || fseguro.exists();
-
-				outStream.writeObject(fileExistServer);
-				
-				if(fileExistServer) { 
-					
-					//case file is type ASSINADO
-					File fileToReadSign = new File("../cloud/"+this.username+"/files/" + fileName + ".assinado");
-					if(fileToReadSign.exists()){				
-						sendToClient(outStream, "-s", fileToReadSign, fileName);
-					}
-					else {
-						//case file is type CIFRADO
-						File fileToReadCif = new File("../cloud/"+this.username+"/files/" + fileName + ".cifrado");
-						if(fileToReadCif.exists()){
-							sendToClient(outStream, "-c", fileToReadCif, fileName);
-						}
-						//case file is type SEGURO
-						else {
-							File fileToReadSecure = new File("../cloud/"+this.username+"/files/" + fileName + ".seguro");
-							if(fileToReadSecure.exists()){ 
-								sendToClient(outStream, "-e", fileToReadSecure, fileName);
-								
-							}
-						}
-					}
-					System.out.println("The file " + fileName + " already sent!");				
+			//boolean alreadySent = (boolean) inStream.readObject(); 
+			
+			File directory = new File("../cloud/"+this.username+"/files");
+			File[] files = directory.listFiles();
+			
+			outStream.writeObject(files.length); 
+			
+			if(files.length != 0) {
+				for (File file : files) {
+		            if (file.getName().contains(fileName + ".")) {
+		                // The file exists with the specified name and extension
+		            	
+		            	outStream.writeObject(true);
+		                
+		            	boolean needCert =  
+		            			(file.getName().contains(".assinado") && !file.getName().endsWith(".assinado")) ||
+		            			(file.getName().contains(".seguro") && !file.getName().endsWith(".seguro"));
+		            	
+		            	outStream.writeObject(needCert); 
+		            	
+		            	
+		            	String extension = "";
+		            	
+		            	if(needCert) {
+		            		int dotIndex = file.getName().lastIndexOf(".");
+		                    extension = file.getName().substring(dotIndex + 1);
+		                    outStream.writeObject(extension);
+		                    
+		                    boolean provide = (boolean) inStream.readObject();
+		                    
+		                    if(provide) {
+			                    
+			                    System.out.println("File extension: " + extension); 
+			                    String path = "../cloud/usersCert/" + extension + ".cer";
+			                    File cer = new File(path);
+			                    FileInputStream destUserCert = new FileInputStream(cer); 
+			                    outStream.writeObject(destUserCert.readAllBytes());
+			                    destUserCert.close();
+			            	}
+		            	}
+		            	
+		                
+		                if(file.getName().contains(".cifrado")) {
+		                	sendToClient(outStream, "-c", file, fileName, extension);
+		                }
+		                
+		                else if(file.getName().contains(".assinado")) {
+		                	sendToClient(outStream, "-s", file,fileName, extension);
+		                }
+		                
+		                else if(file.getName().contains(".seguro")) {
+		                	sendToClient(outStream, "-e", file, fileName, extension);
+		                }
+		                
+		                System.out.println("The file " + file.getName() + " already sent!");
+		            }
+		            else {
+		            	outStream.writeObject(false);
+		            }
 				}
-				else {
-					System.out.println("The file " + fileName + " is not recognized!");
-				}
+	        }
+			else {
+				System.out.println("The file " + fileName + " is not recognized!");
 			}
 		}				
 	}
@@ -78,31 +101,43 @@ public class VerifyCommandG {
 	 * @File fileToRead 
 	 * @String fileName
 	 */
-	private void sendToClient(ObjectOutputStream outStream, String option, File fileToRead, String fileName) throws IOException {
+	private void sendToClient(ObjectOutputStream outStream, String option, File fileToRead, String fileName, String extension) throws IOException {
+		
+		String fileToCheck = fileToRead.getName();
 		
 		outStream.writeObject(option); 
+		outStream.writeObject(fileToCheck.contains("cifrado") ? fileToCheck.replace("cifrado", "decifrado") : fileToCheck);
+		
+		extension = extension.equals("") ? extension : "." + extension;
 		
 		if(option.equals("-c")) {
-			FileInputStream fileInStreamSecretKey = new FileInputStream("../cloud/"+this.username+"/keys/" + fileName + ".chave_secreta"); 
+			String concat = fileName + ".chave_secreta" + extension;
+			System.out.println(concat);
+			FileInputStream fileInStreamSecretKey = new FileInputStream("../cloud/"+this.username+"/keys/" + concat); 
 			outStream.write(fileInStreamSecretKey.readAllBytes());
 			fileInStreamSecretKey.close();
 		} 
 		
 		else if (option.equals("-s")) {
-			FileInputStream fileInStreamSignature = new FileInputStream("../cloud/"+this.username+"/signatures/" + fileName + ".assinatura"); 
+			String concat = fileName + ".assinatura" + extension;
+			System.out.println(concat);
+			FileInputStream fileInStreamSignature = new FileInputStream("../cloud/"+this.username+"/signatures/" + concat); 
 			outStream.write(fileInStreamSignature.readAllBytes()); 
 			fileInStreamSignature.close();
 		}
 		
-		else {
-			FileInputStream fileInStreamSecretKey = new FileInputStream("../cloud/"+this.username+"/keys/" + fileName + ".chave_secreta"); 
+		else if (option.equals("-e")){
+			String concat = fileName + ".chave_secreta" + extension;
+			System.out.println(concat);
+			FileInputStream fileInStreamSecretKey = new FileInputStream("../cloud/"+this.username+"/keys/" + concat); 
 			outStream.write(fileInStreamSecretKey.readAllBytes());
 			fileInStreamSecretKey.close();
-			
-			FileInputStream fileInStreamSignature = new FileInputStream("../cloud/"+this.username+"/signatures/" + fileName + ".assinatura"); 
+			concat = fileName + ".assinatura." + extension;
+			FileInputStream fileInStreamSignature = new FileInputStream("../cloud/"+this.username+"/signatures/" + concat); 
 			outStream.write(fileInStreamSignature.readAllBytes()); 
 			fileInStreamSignature.close();
 		}
+		
 	
 		FileInputStream fileInStream = new FileInputStream(fileToRead); 
 				
