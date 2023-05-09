@@ -55,6 +55,9 @@ public class VerifyCommandG {
 		            	if(needCert) {
 		            		int dotIndex = file.getName().lastIndexOf(".");
 		                    extension = file.getName().substring(dotIndex + 1);
+		                    System.out.println(".............");
+		                    System.out.println(extension);
+		                    
 		                    outStream.writeObject(extension);
 		                    
 		                    boolean provide = (boolean) inStream.readObject();
@@ -70,6 +73,10 @@ public class VerifyCommandG {
 			            	}
 		            	}
 		            	
+		            	if(file.getName().contains(".cifrado") && !file.getName().endsWith(".cifrado")) {
+		            		int dotIndex = file.getName().lastIndexOf(".");
+		            		extension = file.getName().substring(dotIndex + 1);
+		            	}
 		                
 		                if(file.getName().contains(".cifrado")) {
 		                	sendToClient(inStream, outStream, "-c", file, fileName, extension);
