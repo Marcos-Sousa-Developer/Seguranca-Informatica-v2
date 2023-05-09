@@ -34,10 +34,13 @@ public class VerifyCommandG {
 			
 			outStream.writeObject(files.length); 
 			
-			if(files.length != 0) {
+			int count = 0;
+			
+			if(files.length != 0) {				
 				for (File file : files) {
 		            if (file.getName().contains(fileName + ".")) {
 		                // The file exists with the specified name and extension
+		            	count++;
 		            	
 		            	outStream.writeObject(true);
 		                
@@ -45,8 +48,7 @@ public class VerifyCommandG {
 		            			(file.getName().contains(".assinado") && !file.getName().endsWith(".assinado")) ||
 		            			(file.getName().contains(".seguro") && !file.getName().endsWith(".seguro"));
 		            	
-		            	outStream.writeObject(needCert); 
-		            	
+		            	outStream.writeObject(needCert);
 		            	
 		            	String extension = "";
 		            	
@@ -70,15 +72,15 @@ public class VerifyCommandG {
 		            	
 		                
 		                if(file.getName().contains(".cifrado")) {
-		                	sendToClient(outStream, "-c", file, fileName, extension);
+		                	sendToClient(inStream, outStream, "-c", file, fileName, extension);
 		                }
 		                
 		                else if(file.getName().contains(".assinado")) {
-		                	sendToClient(outStream, "-s", file,fileName, extension);
+		                	sendToClient(inStream, outStream, "-s", file, fileName, extension);
 		                }
 		                
 		                else if(file.getName().contains(".seguro")) {
-		                	sendToClient(outStream, "-e", file, fileName, extension);
+		                	sendToClient(inStream, outStream, "-e", file, fileName, extension);
 		                }
 		                
 		                System.out.println("The file " + file.getName() + " was sent!");
@@ -86,6 +88,12 @@ public class VerifyCommandG {
 		            else {
 		            	outStream.writeObject(false);
 		            }
+				}
+				if (count == 0) {
+					outStream.writeObject(false); 
+					System.out.println("The file " + fileName + " is not recognized!");
+				} else {
+					outStream.writeObject(true); 
 				}
 	        }
 			else {
@@ -116,7 +124,6 @@ public class VerifyCommandG {
 			
 			if(option.equals("-c")) {
 				String concat = fileName + ".chave_secreta" + extension;
-				System.out.println(concat);
 				FileInputStream fileInStreamSecretKey = new FileInputStream("../cloud/"+this.username+"/keys/" + concat); 
 				outStream.write(fileInStreamSecretKey.readAllBytes());
 				fileInStreamSecretKey.close();
@@ -124,7 +131,6 @@ public class VerifyCommandG {
 			
 			else if (option.equals("-s")) {
 				String concat = fileName + ".assinatura" + extension;
-				System.out.println(concat);
 				FileInputStream fileInStreamSignature = new FileInputStream("../cloud/"+this.username+"/signatures/" + concat); 
 				outStream.write(fileInStreamSignature.readAllBytes()); 
 				fileInStreamSignature.close();
@@ -132,11 +138,10 @@ public class VerifyCommandG {
 			
 			else if (option.equals("-e")){
 				String concat = fileName + ".chave_secreta" + extension;
-				System.out.println(concat);
 				FileInputStream fileInStreamSecretKey = new FileInputStream("../cloud/"+this.username+"/keys/" + concat); 
 				outStream.write(fileInStreamSecretKey.readAllBytes());
 				fileInStreamSecretKey.close();
-				concat = fileName + ".assinatura." + extension;
+				concat = fileName + ".assinatura" + extension;
 				FileInputStream fileInStreamSignature = new FileInputStream("../cloud/"+this.username+"/signatures/" + concat); 
 				outStream.write(fileInStreamSignature.readAllBytes()); 
 				fileInStreamSignature.close();
