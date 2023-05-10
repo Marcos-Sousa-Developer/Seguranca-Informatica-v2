@@ -211,7 +211,7 @@ public class CommandG {
 			
 			int numberFilesToVerify = (int) inStream.readObject(); 
 			
-			if(numberFilesToVerify != 0 ) {
+			if(numberFilesToVerify != 0) {
 				
 				for (int i = 0; i < numberFilesToVerify; i++) {  
 					
@@ -285,11 +285,14 @@ public class CommandG {
 							}
 						}
 						else {
-							
+							outStream.writeObject(false);
 							System.out.println("You already have the file " + nameFileToSave + ".");
 							
 						}
 					}	
+				}
+				if(!(boolean) inStream.readObject()) {
+					System.err.println("The file " + fileName + " doesn't exist on the server. You must provide a existing file.");
 				}
 				
 			}
