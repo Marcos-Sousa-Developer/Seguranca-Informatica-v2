@@ -32,20 +32,24 @@ public class VerifyCommandC {
 		String type = this.from == null ? "" : "." + this.from;
 		
 		int filesDim = (int) inStream.readObject();
-		
+				
 		for (int i = 0; i < filesDim; i++) {
 
 			Boolean fileExistClient = (Boolean) inStream.readObject();
-
+			
 			// check if file exists on client
 			if (fileExistClient) {
 				String fileName = (String) inStream.readObject();
-
+				
+				System.out.println(fileName);
+				
 				File fcifrado = new File("../cloud/"+this.username+"/files/"+ fileName + ".cifrado" + type);
 				File fseguro = new File("../cloud/"+this.username+"/files/" + fileName + ".seguro" + type);
 
 				//check if file does not exists on the server
 				Boolean fileExistServer = fcifrado.exists() || fseguro.exists();
+				
+				System.out.println(fileExistServer);
 				
 				//send the output
 				outStream.writeObject(fileExistServer);
@@ -56,13 +60,13 @@ public class VerifyCommandC {
 					// ---------------Receives the cipher file----------------------
 
 					String fileNameCif = (String) inStream.readObject();
-
+					
 					FileOutputStream outFileStreamCif = new FileOutputStream("../cloud/"+this.username+"/files/" + fileNameCif + type);
 					BufferedOutputStream outFileCif = new BufferedOutputStream(outFileStreamCif);
 
 					try {
 						Long fileSizeCif = (Long) inStream.readObject();
-
+												
 						int fileSizeCifInt = fileSizeCif.intValue();
 
 						byte[] bufferDataCif = new byte[Math.min(fileSizeCifInt, 1024)];

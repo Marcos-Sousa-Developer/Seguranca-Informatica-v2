@@ -48,7 +48,7 @@ public class CommandDC {
 	 * @String the fileName that wants to cipher
 	 */
 	private void cipherFile(String fileName) throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, IOException {
-		
+				
 		//random key
 		KeyGenerator kg = KeyGenerator.getInstance("AES");
 	    kg.init(128);
@@ -57,6 +57,7 @@ public class CommandDC {
 	    Cipher c = Cipher.getInstance("AES");
 	    c.init(Cipher.ENCRYPT_MODE, key);
 
+	    
 	    //get file in files
 	    FileInputStream fis = new FileInputStream("../files/" + fileName);
 	    // create file.cif in files
@@ -73,7 +74,7 @@ public class CommandDC {
 	    }
 	    cos.close();
 	    fis.close();
-
+	    
 	    byte[] keyEncoded = key.getEncoded();
 	    //save file.key in files
 	    FileOutputStream kos = new FileOutputStream("../files/" + fileName + ".key");
@@ -89,7 +90,7 @@ public class CommandDC {
 	private void cipherKey(String fileName) throws KeyStoreException, NoSuchAlgorithmException, CertificateException, IOException, UnrecoverableKeyException, NoSuchPaddingException, InvalidKeyException, IllegalBlockSizeException {
 		
 		String path = "../keystore/"+this.destUsername+".cer"; 
-		
+				
     	FileInputStream certToVerify = new FileInputStream(path);
     	
         CertificateFactory cf = CertificateFactory.getInstance("X.509");
@@ -140,7 +141,7 @@ public class CommandDC {
 			
 			// check if file exists
 			Boolean fileExistClient = f.exists();
-			
+						
 			//if file exists on client can proceed 
 			if(fileExistClient) {
 				
@@ -150,9 +151,22 @@ public class CommandDC {
 				//send the file name
 				outStream.writeObject(fileName);
 				
-				//check if file exists on the server
-				Boolean fileExistServer = (Boolean) inStream.readObject();
-				
+				System.out.println(fileName);
+		
+				//check if file exists on the server								
+				byte[] fileExistServer2 = (byte[]) inStream.readObject();
+
+			    FileOutputStream teste = new FileOutputStream("../files/variavel.txt");
+			    teste.write(fileExistServer2);
+			    
+			    teste.close();
+			    
+			    System.exit(0);
+			    
+			    Boolean fileExistServer = false;
+			    
+			    
+								
 				// if file does not exists on the client send it
 				if(!fileExistServer) {
 					
