@@ -55,16 +55,13 @@ public class VerifyCommandG {
 		            	if(needCert) {
 		            		int dotIndex = file.getName().lastIndexOf(".");
 		                    extension = file.getName().substring(dotIndex + 1);
-		                    System.out.println(".............");
-		                    System.out.println(extension);
-		                    
+
 		                    outStream.writeObject(extension);
 		                    
 		                    boolean provide = (boolean) inStream.readObject();
 		                    
 		                    if(provide) {
 			                    
-			                    System.out.println("File extension: " + extension); 
 			                    String path = "../cloud/usersCert/" + extension + ".cer";
 			                    File cer = new File(path);
 			                    FileInputStream destUserCert = new FileInputStream(cer); 
