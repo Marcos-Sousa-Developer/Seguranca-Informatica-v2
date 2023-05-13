@@ -14,6 +14,11 @@ public class VerifyUser {
 	public VerifyUser() {}
 
 	public Boolean searchUser(String username, String password) throws IOException, NoSuchAlgorithmException, InvalidKeySpecException {
+		
+		if(!new File("../cloud/passwords.txt").exists()) {
+			return false;
+		}
+		
 		//primeiro procurar o username e obter a linha em que está
 		BufferedReader br = new BufferedReader(new FileReader("../cloud/passwords.txt"));
 		String lines; 
