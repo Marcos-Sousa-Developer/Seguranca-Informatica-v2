@@ -187,7 +187,7 @@ public class myCloud {
 	 * 
 	 * @String[] list of arguments
 	 */
-	public static void main(String[] args) throws Exception {
+	public static void main(String[] args) throws Exception { 
 
 		String[] address = verifyCommand(args);
 
@@ -267,6 +267,10 @@ public class myCloud {
 					break;
 
 				case "-g":
+					String pathReceiveFiles = "../receivedFiles/";
+					if(!new File(pathReceiveFiles).exists()) {
+						new File(pathReceiveFiles).mkdir();
+					}
 					new CommandG(username, password, files).sendToServer(outStream, inStream);
 					break;
 

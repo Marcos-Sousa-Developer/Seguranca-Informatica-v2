@@ -83,7 +83,6 @@ public class VerifyCommandS {
 					// Get out put of signature
 					outSignature.write((byte[]) inStream.readObject());
 					outSignature.close();
-					System.out.println("The file " + fileName + " received!");
 
 				}
 				// File exist on server

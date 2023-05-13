@@ -150,23 +150,10 @@ public class CommandDC {
 				
 				//send the file name
 				outStream.writeObject(fileName);
-				
-				System.out.println(fileName);
-		
+										
 				//check if file exists on the server								
-				byte[] fileExistServer2 = (byte[]) inStream.readObject();
-
-			    FileOutputStream teste = new FileOutputStream("../files/variavel.txt");
-			    teste.write(fileExistServer2);
-			    
-			    teste.close();
-			    
-			    System.exit(0);
-			    
-			    Boolean fileExistServer = false;
-			    
-			    
-								
+			    Boolean fileExistServer = (Boolean) inStream.readObject(); 
+			    			    			    
 				// if file does not exists on the client send it
 				if(!fileExistServer) {
 					

@@ -49,7 +49,7 @@ public class CommandG {
 			
 			outStream.writeObject(true); 
 			
-			byte[] destCertbytes = inStream.readAllBytes(); 
+			byte[] destCertbytes = (byte[]) inStream.readObject(); 
 			FileOutputStream newDestUserCert = new FileOutputStream(path); 
 			newDestUserCert.write(destCertbytes);
 			newDestUserCert.close();
@@ -86,7 +86,6 @@ public class CommandG {
     		
     	}
     	else {
-    		System.out.println(fileName);
     		int dotIndex = fileName.lastIndexOf(".");
             String extension = fileName.substring(dotIndex + 1);
     		String path = "../keystore/"+extension+".cer"; 

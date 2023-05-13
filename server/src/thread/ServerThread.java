@@ -74,8 +74,8 @@ public class ServerThread extends Thread {
 				
 			} else if (option1.equals("-au")) {
 
-				byte[] cert = inStream.readAllBytes();
-
+				byte[] cert = (byte[]) inStream.readObject();   
+				
 				Boolean isNewUser = new NewUser(this.macPassword).searchUsername(username, password); 
 				
 				if(isNewUser) {

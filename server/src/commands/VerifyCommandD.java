@@ -44,6 +44,9 @@ public class VerifyCommandD {
 				FileInputStream destUserCert = new FileInputStream(cer); 
 				
 				outStream.writeObject(destUserCert.readAllBytes());
+				
+				destUserCert.close();
+				
 				if(this.commandToDo.equals("-c")) {
 					new VerifyCommandC(this.destUsername,this.username).verify(inStream, outStream);
 				}

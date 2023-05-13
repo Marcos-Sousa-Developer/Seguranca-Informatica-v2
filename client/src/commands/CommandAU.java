@@ -25,7 +25,7 @@ public class CommandAU {
 
 		outStream.writeObject("-au");
 		outStream.writeObject(this.username);
-		outStream.writeObject(this.password);
+		outStream.writeObject(this.password); 
 		outStream.writeObject(this.certInFile.readAllBytes());
 		
 		return (Boolean) inStream.readObject();

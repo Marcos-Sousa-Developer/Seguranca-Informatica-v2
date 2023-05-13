@@ -42,7 +42,7 @@ public class CommandD {
 			}
 			else {
 				
-				byte[] destCertbytes = inStream.readAllBytes(); 
+				byte[] destCertbytes = (byte[]) inStream.readObject(); 
 				FileOutputStream newDestUserCert = new FileOutputStream(path); 
 				newDestUserCert.write(destCertbytes);
 				newDestUserCert.close();

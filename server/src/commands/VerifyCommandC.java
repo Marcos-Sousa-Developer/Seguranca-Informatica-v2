@@ -40,20 +40,16 @@ public class VerifyCommandC {
 			// check if file exists on client
 			if (fileExistClient) {
 				String fileName = (String) inStream.readObject();
-				
-				System.out.println(fileName);
-				
+								
 				File fcifrado = new File("../cloud/"+this.username+"/files/"+ fileName + ".cifrado" + type);
 				File fseguro = new File("../cloud/"+this.username+"/files/" + fileName + ".seguro" + type);
 
 				//check if file does not exists on the server
 				Boolean fileExistServer = fcifrado.exists() || fseguro.exists();
 				
-				System.out.println(fileExistServer);
-				
 				//send the output
 				outStream.writeObject(fileExistServer);
-
+			
 				//if does not exists
 				if (!fileExistServer) {
 
