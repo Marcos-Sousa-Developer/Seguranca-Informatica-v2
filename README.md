@@ -115,6 +115,7 @@ java myCloud -a 127.0.0.1:23456 -u maria -p ut12?!WE -g trab1.pdf aulas.doc
 ```
 
 **-d dest user**
+
 O sistema deve permitir enviar ficheiros para o servidor para outros utilizadores.
 
 Exemplo: 
