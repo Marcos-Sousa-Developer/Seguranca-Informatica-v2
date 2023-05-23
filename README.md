@@ -128,5 +128,6 @@ java myCloud -a 10.101.21.22 -u maria -p ut12?!WE -d alice -c aa.pdf bb.txt
 # Notas 
 Toda criptografia assimétrica no trabalho é com RSA com chaves de 2048 bits. <br>
 A criptografia simétrica é efetuada com AES e chaves de 128 bits. <br>
-Os utilizadores do myCloud têm de ter um par de chaves na keystore designada por keystore.??Cloud
-Para mais detalhes, ler enunciado.pdf
+Os utilizadores do myCloud têm de ter um par de chaves na keystore designada por keystore.??Cloud <br>
+
+**Para mais detalhes, ler enunciado.pdf**
