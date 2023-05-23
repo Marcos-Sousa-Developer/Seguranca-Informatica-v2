@@ -8,7 +8,10 @@
 <hr>
 
 # Objetivo
-IN PROCESS 
+Esta fase do trabalho estende a anterior, possibilitando os mecanismos de segurança, tais como: MACs, comunicação com um protocolo seguro (TLS –Transport Layer Security) e gestão básica de certificados. <br>
+A envolvente do trabalho continua a ser a mesma, ou seja, a concretização de um sistema simplificado de armazenamento de ficheiros, designado por myCloud, onde o utilizador usa um servidor central para armazenar os seus ficheiros. <br>
+Iremos assumir no trabalho que existe um adversário que pretende comprometer o correto funcionamento do sistema. O adversário terá um conjunto de capacidades que poderão ser empregues na realização das suas ações maliciosas.<br>
+Torna-se assim necessário dotar o sistema dos mecanismos de proteção que lhe possibilitem manter um funcionamento correto ainda que se encontre sob ataque.
 
 <hr>
 
@@ -18,7 +21,24 @@ O trabalho consiste no desenvolvimento de dois programas:
 * O servidor myCloudServer
 * A aplicação cliente myCloud que acede ao servidor via sockets TCP
 
-A aplicação é distribuída de forma que o servidor fica numa máquina e o utilizador pode usar clientes em máquinas diferentes na Internet. 
+A aplicação é distribuída de forma que o servidor fica numa máquina e o utilizador pode usar clientes em máquinas diferentes na Internet.  
+
+# Gestão utilizadores
+
+O servidor mantém um ficheiro (designado por passwords) com os utilizadores do sistema e respetivas informações. <br>
+Este ficheiro deve ser um ficheiro de texto. Cada linha tem um username e a respetiva password (com o salt): <br>
+Por exemplo: <br>
+admin;ut4Ic9BfJNfFL2fJ+4IXGQ==;yn9ZU+vkUK/mtt+vuRU7az3yb4vWEPmoyXXRaI8nxIc=
+maria;w9CfDqX9Li5krpdJZgg/Qh;A46KPmM+bClnR5D8URnVAzG9heNbvxop5eQq1leAcuk=
+alice;dbqPTW49yNLmOJK4RC;MAOgRGmbTqpwNdI5yIjZJICRG7CvKlRNOozCKx0QsyY=
+
+# Criação de utilizadores
+
+A opção -au será utilizada para criar utilizadores
+
+```bash
+myCloud -a <serverAddress> -au <username> <password> <certificado>
+```
 
 # Instruções   
 **1ºPasso: Ir para a pasta src/**
@@ -31,8 +51,12 @@ java myCloudServer 'PortNumber'
 **3ºPasso: Correr o cliente** 
 
 ```bash
-java myCloud -a 'HOST':'PortNumber' {-c||-s||-e||-g} {<filenames>}+ 
+java myCloud -a 'HOST':'PortNumber' -u <username> -p <password> {-c||-s||-e||-g} {<filenames>}+ 
 ```
+```bash
+java myCloud -a 'HOST':'PortNumber' -u <username> -p <password> -d <username de destinatário> {-c||-s||-e} {<filenames>}+ 
+```
+
 <hr>
 
 ## Comandos para o Cliente
@@ -50,7 +74,7 @@ Os ficheiros cifrados são guardados no servidor com extensão cifrado. <br>
 
 Exemplo: 
 ```bash
-java myCloud -a 127.0.0.1:23456 -c trab1.pdf aulas.doc
+java myCloud -a 127.0.0.1:23456 -u maria -p ut12?!WE -c trab1.pdf aulas.doc
 ```
 
 **-s filenames+** 
@@ -63,7 +87,7 @@ assinado.
 
 Exemplo: 
 ```bash
-java myCloud -a 127.0.0.1:23456 -s trab1.pdf aulas.doc
+java myCloud -a 127.0.0.1:23456 -u maria -p ut12?!WE -s trab1.pdf aulas.doc
 ```
 
 **-e filenames+**
@@ -75,7 +99,7 @@ O cliente usa envelopes seguros portanto os ficheiros são guardados no servidor
 
 Exemplo: 
 ```bash
-java myCloud -a 127.0.0.1:23456 -e trab1.pdf aulas.doc
+java myCloud -a 127.0.0.1:23456 -u maria -p ut12?!WE -e trab1.pdf aulas.doc
 ```
 
 **-g filenames+**
@@ -87,8 +111,17 @@ O cliente verifica a assinatura dos ficheiros que tenham sido assinados.
 
 Exemplo: 
 ```bash
-java myCloud -a 127.0.0.1:23456 -g trab1.pdf aulas.doc
+java myCloud -a 127.0.0.1:23456 -u maria -p ut12?!WE -g trab1.pdf aulas.doc
 ```
+
+**-d dest user**
+O sistema deve permitir enviar ficheiros para o servidor para outros utilizadores.
+
+Exemplo: 
+```bash
+java myCloud -a 10.101.21.22 -u maria -p ut12?!WE -d alice -c aa.pdf bb.txt
+```
+
 <hr>
 
 # Notas 
